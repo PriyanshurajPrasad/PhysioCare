@@ -1,0 +1,233 @@
+/* =====================================
+   GLOBAL IMAGE RESPONSIVENESS FIXES
+   ==================================== */
+
+/* Base responsive image styles */
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
+  border-radius: inherit;
+}
+
+/* Image container fixes */
+.image-container {
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Aspect ratio containers */
+.aspect-ratio-16-9 {
+  position: relative;
+  width: 100%;
+  padding-bottom: 56.25%; /* 16:9 aspect ratio */
+  overflow: hidden;
+}
+
+.aspect-ratio-4-3 {
+  position: relative;
+  width: 100%;
+  padding-bottom: 75%; /* 4:3 aspect ratio */
+  overflow: hidden;
+}
+
+.aspect-ratio-1-1 {
+  position: relative;
+  width: 100%;
+  padding-bottom: 100%; /* 1:1 aspect ratio */
+  overflow: hidden;
+}
+
+/* Images inside aspect ratio containers */
+.aspect-ratio-16-9 img,
+.aspect-ratio-4-3 img,
+.aspect-ratio-1-1 img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Mobile specific fixes */
+@media (max-width: 640px) {
+  img {
+    width: 100%;
+    height: auto;
+  }
+  
+  .aspect-ratio-16-9 {
+    padding-bottom: 60%; /* Slightly taller on mobile */
+  }
+  
+  .image-container img {
+    min-height: 200px; /* Minimum height on mobile */
+  }
+}
+
+/* Tablet fixes */
+@media (min-width: 641px) and (max-width: 1024px) {
+  .aspect-ratio-16-9 {
+    padding-bottom: 56.25%; /* Standard 16:9 */
+  }
+  
+  .image-container img {
+    min-height: 300px; /* Minimum height on tablet */
+  }
+}
+
+/* Desktop fixes */
+@media (min-width: 1025px) {
+  .image-container img {
+    min-height: 400px; /* Minimum height on desktop */
+  }
+}
+
+/* Grid image fixes */
+.grid-image {
+  width: 100%;
+  height: 250px;
+  object-fit: cover;
+  border-radius: 0.75rem;
+}
+
+@media (max-width: 640px) {
+  .grid-image {
+    height: 200px;
+  }
+}
+
+/* Card image fixes */
+.card-image {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 0.5rem 0.5rem 0 0;
+}
+
+@media (max-width: 640px) {
+  .card-image {
+    height: 150px;
+  }
+}
+
+/* Profile image fixes */
+.profile-image {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 3px solid white;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+@media (max-width: 640px) {
+  .profile-image {
+    width: 60px;
+    height: 60px;
+  }
+}
+
+/* Hero image fixes */
+.hero-image {
+  width: 100%;
+  height: 500px;
+  object-fit: cover;
+  border-radius: 1rem;
+}
+
+@media (max-width: 640px) {
+  .hero-image {
+    height: 300px;
+  }
+}
+
+@media (min-width: 1025px) {
+  .hero-image {
+    height: 600px;
+  }
+}
+
+/* Background image fixes */
+.bg-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+/* Fix for images in flex containers */
+.flex img {
+  flex-shrink: 0;
+  max-width: 100%;
+  height: auto;
+}
+
+/* Fix for images in grid containers */
+.grid img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Prevent image overflow */
+.no-overflow {
+  overflow: hidden;
+}
+
+/* Responsive height utilities */
+.responsive-height-mobile {
+  height: 200px;
+}
+
+.responsive-height-tablet {
+  height: 300px;
+}
+
+.responsive-height-desktop {
+  height: 400px;
+}
+
+@media (max-width: 640px) {
+  .responsive-height-mobile {
+    height: 150px;
+  }
+}
+
+@media (min-width: 641px) and (max-width: 1024px) {
+  .responsive-height-tablet {
+    height: 250px;
+  }
+}
+
+/* Loading state for images */
+img[loading="lazy"] {
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+img[loading="lazy"].loaded {
+  opacity: 1;
+}
+
+/* Fix for Bootstrap compatibility */
+.img-fluid {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Ensure images don't break layout */
+.img-responsive {
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
+}
