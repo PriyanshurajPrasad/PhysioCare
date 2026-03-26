@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Create axios instance with environment-based baseURL
 const API = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || "/api", // Use env var or fallback to proxy
+  baseURL: import.meta.env.VITE_API_BASE_URL || "/api", // Use env var or fallback to proxy
   timeout: 10000,
   withCredentials: false,
   headers: { 'Content-Type': 'application/json' }
@@ -18,6 +18,7 @@ API.interceptors.request.use(
     console.log('🔗 API Request:', {
       method: config.method?.toUpperCase(),
       url: config.baseURL + config.url,
+      baseURL: config.baseURL,
       hasToken: !!token,
       authHeader: config.headers.Authorization ? 'Bearer [TOKEN]' : 'None'
     });
@@ -43,6 +44,7 @@ API.interceptors.response.use(
     console.error('❌ API Error:', {
       status: error.response?.status,
       url: error.config?.url,
+      baseURL: error.config?.baseURL,
       message: error.message,
       data: error.response?.data
     });
@@ -56,8 +58,9 @@ API.interceptors.response.use(
 
     // Handle network errors
     if (!error.response) {
+      const baseURL = error.config?.baseURL;
       console.error('🌐 Network Error - Backend not reachable');
-      error.customMessage = 'Backend not reachable (CORS/URL/server down). Check backend on port 4500.';
+      error.customMessage = `Backend not reachable. Check backend URL (${baseURL}) and CORS settings. Ensure backend is running and accessible.`;
     }
 
     return Promise.reject(error);
@@ -66,7 +69,7 @@ API.interceptors.response.use(
 
 // Debug environment variables
 console.log('🌍 Environment Variables:');
-console.log('  VITE_API_URL:', import.meta.env.VITE_API_URL);
+console.log('  VITE_API_BASE_URL:', import.meta.env.VITE_API_BASE_URL);
 console.log('  API baseURL:', API.defaults.baseURL);
 
 export default API;
