@@ -1,6 +1,6 @@
 import API from './api';
 
-export const contactService = {
+const contactService = {
   createContact: async (payload) => {
     try {
       const response = await API.post('/api/contact', payload);
@@ -36,3 +36,5 @@ export const contactService = {
     }
   },
 };
+
+export default contactService;
