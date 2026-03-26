@@ -1,5 +1,6 @@
 const Contact = require('../models/Contact');
 const { asyncHandler } = require('../middleware/errorMiddleware');
+const emailService = require('../utils/emailService');
 
 /**
  * @desc    Create new contact submission
@@ -9,19 +10,122 @@ const { asyncHandler } = require('../middleware/errorMiddleware');
 const createContact = asyncHandler(async (req, res) => {
   const { name, email, phone, subject, message, priority } = req.body;
 
-  const contact = await Contact.create({
-    name,
-    email,
-    phone,
-    subject,
-    message,
-    priority: priority || 'medium'
-  });
+  let contact;
+  let emailSent = false;
+  let emailError = null;
 
+  try {
+    // Save contact to database first
+    contact = await Contact.create({
+      name,
+      email,
+      phone,
+      subject,
+      message,
+      priority: priority || 'medium'
+    });
+
+    console.log('✅ Contact saved to database:', {
+      contactId: contact._id,
+      name: contact.name,
+      email: contact.email
+    });
+
+  } catch (dbError) {
+    console.error('❌ Database save failed:', dbError);
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to save contact',
+      error: dbError.message
+    });
+  }
+
+  // Prepare email content for admin notification
+  const emailSubject = `New Contact Form Submission: ${subject || 'No Subject'}`;
+  const emailHtml = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+      <div style="background: #f8f9fa; padding: 20px; border-radius: 8px;">
+        <h2 style="color: #333; margin-bottom: 20px;">New Contact Form Submission</h2>
+        <div style="background: white; padding: 20px; border-radius: 6px; margin-bottom: 20px;">
+          <div style="margin-bottom: 15px;">
+            <strong>Name:</strong> ${name}
+          </div>
+          <div style="margin-bottom: 15px;">
+            <strong>Email:</strong> ${email}
+          </div>
+          <div style="margin-bottom: 15px;">
+            <strong>Phone:</strong> ${phone || 'Not provided'}
+          </div>
+          <div style="margin-bottom: 15px;">
+            <strong>Subject:</strong> ${subject || 'No subject'}
+          </div>
+          <div style="margin-bottom: 15px;">
+            <strong>Priority:</strong> ${priority || 'medium'}
+          </div>
+          <div style="margin-bottom: 15px;">
+            <strong>Message:</strong><br>
+            <div style="background: #f8f9fa; padding: 10px; border-radius: 4px; margin-top: 5px;">
+              ${message.replace(/\n/g, '<br>')}
+            </div>
+          </div>
+          <div style="margin-bottom: 15px;">
+            <strong>Submitted:</strong> ${new Date(contact.createdAt).toLocaleString()}
+          </div>
+        </div>
+        <p style="color: #999; font-size: 14px; margin: 0;">
+          This is an automated notification from PhysioCare Clinic Contact Form.
+        </p>
+      </div>
+    </div>
+  `;
+
+  const emailText = `
+New Contact Form Submission
+
+Name: ${name}
+Email: ${email}
+Phone: ${phone || 'Not provided'}
+Subject: ${subject || 'No subject'}
+Priority: ${priority || 'medium'}
+Message: ${message}
+Submitted: ${new Date(contact.createdAt).toLocaleString()}
+
+This is an automated notification from PhysioCare Clinic Contact Form.
+  `;
+
+  try {
+    // Send email notification to admin using Resend
+    const emailResult = await emailService.sendEmail({
+      to: "priyanshurajprasad999@gmail.com",
+      subject: emailSubject,
+      html: emailHtml,
+      text: emailText
+    });
+
+    if (emailResult.success) {
+      emailSent = true;
+      console.log('✅ Email sent successfully:', {
+        contactId: contact._id,
+        emailProvider: 'resend',
+        messageId: emailResult.messageId
+      });
+    } else {
+      emailError = emailResult.error;
+      console.error('❌ Email sending failed:', emailResult.error);
+    }
+
+  } catch (error) {
+    console.error('❌ Email sending error:', error);
+    emailError = error.message;
+  }
+
+  // Always return success response since contact was saved
   res.status(201).json({
     success: true,
-    message: 'Contact form submitted successfully',
-    data: contact
+    message: emailSent ? 'Contact form submitted successfully' : 'Contact form submitted successfully (email notification failed)',
+    data: contact,
+    emailSent: emailSent,
+    emailError: emailError
   });
 });
 
@@ -199,51 +303,101 @@ const replyToContact = asyncHandler(async (req, res) => {
   }
 
   try {
-    // Send email
-    const emailResult = await sendEmail({
+    // Prepare reply email content
+    const replySubject = subject || `Re: ${contact.subject || 'Your message to PhysioCare Clinic'}`;
+    const replyHtml = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <div style="background: #f8f9fa; padding: 20px; border-radius: 8px;">
+          <h2 style="color: #333; margin-bottom: 20px;">Reply from PhysioCare Clinic</h2>
+          <div style="background: white; padding: 20px; border-radius: 6px; margin-bottom: 20px;">
+            <p style="color: #666; line-height: 1.6; margin: 0;">${message.replace(/\n/g, '<br>')}</p>
+          </div>
+          <p style="color: #999; font-size: 14px; margin: 0;">
+            This is a reply to your message sent to PhysioCare Clinic.
+          </p>
+        </div>
+      </div>
+    `;
+
+    const replyText = `
+Reply from PhysioCare Clinic
+
+${message}
+
+This is a reply to your message sent to PhysioCare Clinic.
+    `;
+
+    // Send reply email using Resend
+    const emailResult = await emailService.sendEmail({
       to: contact.email,
-      subject: subject,
-      message: message,
-      replyTo: process.env.FROM_EMAIL
+      subject: replySubject,
+      html: replyHtml,
+      text: replyText
     });
 
     // Add reply to history
     const replyData = {
-      subject,
-      message,
+      subject: replySubject,
+      message: message,
       sentTo: contact.email,
       sentByAdminId: adminId,
-      messageId: emailResult.messageId,
-      provider: emailResult.provider,
-      status: 'sent'
+      messageId: emailResult.success ? emailResult.messageId : null,
+      provider: 'resend',
+      status: emailResult.success ? 'sent' : 'failed',
+      sentAt: new Date(),
+      error: emailResult.success ? null : emailResult.error
     };
 
+    contact.replyHistory = contact.replyHistory || [];
     contact.replyHistory.push(replyData);
     await contact.save();
 
-    res.status(200).json({
-      success: true,
-      message: 'Reply sent successfully',
-      data: {
+    if (emailResult.success) {
+      console.log('✅ Reply sent successfully:', {
+        contactId: contact._id,
         messageId: emailResult.messageId,
-        provider: emailResult.provider,
-        previewUrl: emailResult.previewUrl
-      }
-    });
+        provider: 'resend'
+      });
+
+      res.status(200).json({
+        success: true,
+        message: 'Reply sent successfully',
+        data: {
+          messageId: emailResult.messageId,
+          provider: 'resend',
+          reply: {
+            subject: replySubject,
+            message: message,
+            sentTo: contact.email
+          }
+        }
+      });
+    } else {
+      console.error('❌ Reply sending failed:', emailResult.error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to send reply',
+        error: emailResult.error
+      });
+    }
 
   } catch (error) {
-    console.error('Error sending reply:', error);
+    console.error('❌ Reply sending failed:', error);
 
     // Add failed reply to history
     const replyData = {
-      subject,
-      message,
+      subject: subject || `Re: ${contact.subject || 'Your message to PhysioCare Clinic'}`,
+      message: message,
       sentTo: contact.email,
       sentByAdminId: adminId,
+      messageId: null,
+      provider: 'resend',
       status: 'failed',
+      sentAt: new Date(),
       error: error.message
     };
 
+    contact.replyHistory = contact.replyHistory || [];
     contact.replyHistory.push(replyData);
     await contact.save();
 
@@ -254,104 +408,6 @@ const replyToContact = asyncHandler(async (req, res) => {
     });
   }
 });
-
-/**
- * Send email using Nodemailer
- */
-const sendEmail = async ({ to, subject, message, replyTo }) => {
-  try {
-    // Check if SMTP credentials are available
-    if (process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS) {
-      // Use real SMTP
-      const transporter = nodemailer.createTransporter({
-        host: process.env.SMTP_HOST,
-        port: process.env.SMTP_PORT || 587,
-        secure: process.env.SMTP_SECURE === 'true',
-        auth: {
-          user: process.env.SMTP_USER,
-          pass: process.env.SMTP_PASS
-        }
-      });
-
-      const mailOptions = {
-        from: process.env.FROM_EMAIL,
-        to: to,
-        subject: subject,
-        html: `
-          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-            <div style="background: #f8f9fa; padding: 20px; border-radius: 8px;">
-              <h2 style="color: #333; margin-bottom: 20px;">${subject}</h2>
-              <div style="background: white; padding: 20px; border-radius: 6px; margin-bottom: 20px;">
-                <p style="color: #666; line-height: 1.6; margin: 0;">${message.replace(/\n/g, '<br>')}</p>
-              </div>
-              <p style="color: #999; font-size: 14px; margin: 0;">
-                This is a reply to your message sent to PhysioCare Clinic.
-              </p>
-            </div>
-          </div>
-        `,
-        replyTo: replyTo
-      };
-
-      const result = await transporter.sendMail(mailOptions);
-      
-      return {
-        messageId: result.messageId,
-        provider: 'smtp',
-        previewUrl: null
-      };
-    } else {
-      // Use Ethereal for testing
-      const testAccount = await nodemailer.createTestAccount();
-      
-      const transporter = nodemailer.createTransporter({
-        host: 'smtp.ethereal.email',
-        port: 587,
-        secure: false,
-        auth: {
-          user: testAccount.user,
-          pass: testAccount.pass
-        }
-      });
-
-      const mailOptions = {
-        from: process.env.FROM_EMAIL || `"PhysioCare Clinic" <${testAccount.user}>`,
-        to: to,
-        subject: subject,
-        html: `
-          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-            <div style="background: #f8f9fa; padding: 20px; border-radius: 8px;">
-              <h2 style="color: #333; margin-bottom: 20px;">${subject}</h2>
-              <div style="background: white; padding: 20px; border-radius: 6px; margin-bottom: 20px;">
-                <p style="color: #666; line-height: 1.6; margin: 0;">${message.replace(/\n/g, '<br>')}</p>
-              </div>
-              <p style="color: #999; font-size: 14px; margin: 0;">
-                This is a reply to your message sent to PhysioCare Clinic.
-              </p>
-            </div>
-          </div>
-        `,
-        replyTo: replyTo
-      };
-
-      const result = await transporter.sendMail(mailOptions);
-      
-      console.log('📧 Ethereal Email sent:');
-      console.log('   Preview URL:', nodemailer.getTestMessageUrl(result));
-      console.log('   To:', to);
-      console.log('   Subject:', subject);
-
-      return {
-        messageId: result.messageId,
-        provider: 'ethereal',
-        previewUrl: nodemailer.getTestMessageUrl(result)
-      };
-    }
-  } catch (error) {
-    console.error('Email sending error:', error);
-    throw error;
-  }
-};
 
 module.exports = {
   createContact,
