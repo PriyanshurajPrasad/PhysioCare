@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import publicService from '../../services/publicService';
+import contactService from '../../services/contactService';
 import { 
   Heart, 
   Brain, 
@@ -76,9 +76,9 @@ const Contact = () => {
     setSuccess('');
 
     try {
-      const response = await publicService.submitContact(formData);
+      const response = await contactService.createContact(formData);
       
-      if (response.data?.success) {
+      if (response.success) {
         setSuccess('Message sent successfully! We will get back to you soon.');
         setFormData({
           name: '',
@@ -89,10 +89,10 @@ const Contact = () => {
           priority: 'medium'
         });
       } else {
-        setError('Failed to send message. Please try again.');
+        setError(response.error || 'Failed to send message. Please try again.');
       }
     } catch (err) {
-      setError(err.response?.data?.message || err.customMessage || 'Failed to send message. Please try again.');
+      setError(err.error || err.customMessage || 'Failed to send message. Please try again.');
     } finally {
       setLoading(false);
     }
