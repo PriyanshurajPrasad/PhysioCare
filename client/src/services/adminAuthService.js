@@ -92,6 +92,15 @@ export const tokenManager = {
   isAuthenticated: () => {
     const adminToken = tokenManager.getToken();
     const adminUser = tokenManager.getUser();
+    
+    // Debug log
+    console.log('tokenManager.isAuthenticated check:', {
+      hasToken: !!adminToken,
+      hasUser: !!adminUser,
+      userRole: adminUser?.role,
+      isValid: !!(adminToken && adminUser && adminUser.role === 'admin')
+    });
+    
     return !!(adminToken && adminUser && adminUser.role === 'admin');
   }
 };

@@ -19,8 +19,7 @@ API.interceptors.request.use(
       method: config.method?.toUpperCase(),
       url: config.baseURL + config.url,
       baseURL: config.baseURL,
-      hasToken: !!token,
-      authHeader: config.headers.Authorization ? 'Bearer [TOKEN]' : 'None'
+      hasToken: !!token
     });
     return config;
   },
@@ -66,10 +65,5 @@ API.interceptors.response.use(
     return Promise.reject(error);
   }
 );
-
-// Debug environment variables
-console.log('🌍 Environment Variables:');
-console.log('  VITE_API_BASE_URL:', import.meta.env.VITE_API_BASE_URL);
-console.log('  API baseURL:', API.defaults.baseURL);
 
 export default API;

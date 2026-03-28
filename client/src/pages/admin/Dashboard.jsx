@@ -47,6 +47,7 @@ import SectionCard from '../../components/admin/SectionCard';
 import Badge from '../../components/admin/Badge';
 import DataTable from '../../components/admin/DataTable';
 import SkeletonLoader from '../../components/admin/SkeletonLoader';
+import { normalizeResponseData, safeFallback } from '../../utils/dataUtils';
 
 const Dashboard = () => {
   const [loading, setLoading] = useState(true);
@@ -99,7 +100,8 @@ const Dashboard = () => {
 
         // Fetch appointments
         const appointmentsResponse = await adminService.getAppointments({ limit: 5 });
-        setAppointments(appointmentsResponse.data);
+        const appointmentsArray = normalizeResponseData(appointmentsResponse, 'appointments');
+        setAppointments(appointmentsArray);
 
       } catch (err) {
         console.error('Dashboard error:', err);
@@ -243,22 +245,34 @@ const Dashboard = () => {
             icon={CalendarDays}
           >
             <div className="space-y-3">
-              {appointments.slice(0, 3).map((appointment, index) => (
-                <div key={appointment.id} className="flex items-center justify-between p-3 hover:bg-gray-50 rounded border-b border-gray-100 last:border-b-0">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                      <CheckCircle className="w-4 h-4 text-green-600" />
+              {Array.isArray(appointments) && appointments.length > 0 ? (
+                appointments.slice(0, 3).map((appointment, index) => (
+                  <div key={appointment.id || index} className="flex items-center justify-between p-3 hover:bg-gray-50 rounded border-b border-gray-100 last:border-b-0">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                        <CheckCircle className="w-4 h-4 text-green-600" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-gray-900">
+                          {safeFallback(appointment.patientName, 'Unknown Patient')}
+                        </p>
+                        <p className="text-xs text-gray-500">
+                          {safeFallback(appointment.time) || safeFallback(appointment.preferredDate, 'No time specified')}
+                        </p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="text-sm font-medium text-gray-900">{appointment.patientName}</p>
-                      <p className="text-xs text-gray-500">{appointment.time}</p>
-                    </div>
+                    <button className="text-blue-600 hover:text-blue-800 text-sm">
+                      View Details
+                    </button>
                   </div>
-                  <button className="text-blue-600 hover:text-blue-800 text-sm">
-                    View Details
-                  </button>
+                ))
+              ) : (
+                <div className="text-center py-8">
+                  <Calendar className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                  <p className="text-gray-500 text-sm">No recent appointments</p>
+                  <p className="text-gray-400 text-xs mt-1">New appointments will appear here</p>
                 </div>
-              ))}
+              )}
             </div>
           </SectionCard>
         </div>
