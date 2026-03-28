@@ -29,29 +29,16 @@ const app = express();
 // CORS Configuration
 const corsOptions = {
   origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps or curl requests)
     if (!origin) return callback(null, true);
-    
-    // Allow any localhost port for development
-    if (origin.startsWith('http://localhost:')) {
+
+    if (
+      origin.startsWith("http://localhost") ||
+      origin.includes(".vercel.app")
+    ) {
       return callback(null, true);
     }
-    
-    // Allow specific production origins
-    const allowedOrigins = [
-      'http://localhost:5173',
-      'http://localhost:5174', 
-      'http://localhost:5175',
-      
-      process.env.CLIENT_URL
-    ].filter(Boolean);
-    
-    if (allowedOrigins.indexOf(origin) !== -1) {
-      return callback(null, true);
-    } else {
-      const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
-      return callback(new Error(msg), false);
-    }
+
+    return callback(null, true); // allow all for now
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
