@@ -410,33 +410,36 @@ const Dashboard = () => {
 
   if (loading) {
     return (
-      <div className="space-y-6">
-        {/* Modern Loading Header */}
-        <div className="flex items-center justify-between mb-8">
-          <div className="space-y-2">
-            <div className="h-8 bg-gray-200 rounded-xl w-64 animate-pulse"></div>
-            <div className="h-4 bg-gray-200 rounded-xl w-96 animate-pulse"></div>
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
+        <div className="w-full max-w-md">
+          {/* Modern Loading Header */}
+          <div className="flex items-center justify-between mb-8">
+            <div className="space-y-2">
+              <div className="h-8 w-8 sm:h-10 sm:w-10 bg-gray-200 rounded-xl animate-pulse"></div>
+              <div className="h-10 w-10 sm:h-10 sm:w-10 bg-gray-200 rounded-xl animate-pulse"></div>
+              <div className="h-10 w-10 sm:h-10 sm:w-10 bg-gray-200 rounded-xl animate-pulse"></div>
+            </div>
+            <div>
+              <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 text-center">Loading Dashboard</h2>
+              <p className="text-sm text-gray-500 text-center mt-2">Fetching your clinic metrics...</p>
+            </div>
           </div>
-          <div className="flex space-x-2">
-            <div className="h-10 bg-gray-200 rounded-xl w-32 animate-pulse"></div>
-            <div className="h-10 bg-gray-200 rounded-xl w-32 animate-pulse"></div>
-          </div>
-        </div>
 
-        {/* Stats Cards Skeleton */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <SkeletonLoader type="stat" count={4} />
-        </div>
-
-        {/* Content Skeleton */}
-        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-          <div className="xl:col-span-2 space-y-6">
-            <SkeletonLoader type="card" className="h-96" />
-            <SkeletonLoader type="card" className="h-80" />
+          {/* Responsive Stats Skeleton */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <SkeletonLoader type="stat" count={4} />
           </div>
-          <div className="space-y-6">
-            <SkeletonLoader type="card" className="h-64" />
-            <SkeletonLoader type="card" className="h-80" />
+
+          {/* Content Skeleton */}
+          <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+            <div className="xl:col-span-2 space-y-6">
+              <SkeletonLoader type="card" className="h-64 sm:h-72" />
+              <SkeletonLoader type="card" className="h-48 sm:h-56" />
+            </div>
+            <div className="space-y-6">
+              <SkeletonLoader type="card" className="h-48 sm:h-56" />
+              <SkeletonLoader type="card" className="h-48 sm:h-56" />
+            </div>
           </div>
         </div>
       </div>
@@ -648,94 +651,121 @@ const Dashboard = () => {
               </button>
             }
           >
-            <DataTable 
-              columns={appointmentsColumns}
-              data={appointmentsData}
-              emptyMessage="No appointments scheduled for today"
-              className="border-0"
-            />
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="w-full min-w-[640px]">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      {appointmentsColumns.map((column) => (
+                        <th
+                          key={column.key}
+                          className="px-3 sm:px-4 py-3 sm:py-4 text-left text-xs sm:text-sm font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap"
+                        >
+                          {column.header}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {appointmentsData.map((appointment, index) => (
+                      <tr key={appointment.id} className="hover:bg-gray-50 transition-colors">
+                        {appointmentsColumns.map((column) => (
+                          <td
+                            key={column.key}
+                            className="px-3 sm:px-4 py-3 sm:py-4 text-sm text-gray-900 whitespace-nowrap"
+                          >
+                            {column.render(appointment)}
+                          </td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
           </SectionCard>
         </div>
 
         {/* Right Sidebar - 1 column */}
         <div className="space-y-6">
-          {/* Quick Actions */}
+          {/* Responsive Quick Actions */}
           <SectionCard 
             title="Quick Actions"
             subtitle="Common tasks and shortcuts"
             icon={Zap}
           >
-            <div className="grid grid-cols-2 gap-3">
-              {quickActions.map((action, index) => {
-                const Icon = action.icon;
-                return (
-                  <button
-                    key={index}
-                    onClick={action.action}
-                    className={`
-                      p-4 rounded-xl border border-gray-200 
-                      hover:shadow-lg transition-all duration-200 text-left group
-                      transform hover:-translate-y-1
-                      ${action.color}
-                    `}
-                  >
-                    <Icon className="w-6 h-6 mb-3 group-hover:scale-110 transition-transform duration-200" />
-                    <h4 className="font-semibold text-sm mb-1">{action.title}</h4>
-                    <p className="text-xs opacity-90 mb-2">{action.description}</p>
-                    <div className="text-xs opacity-75 font-mono bg-black/10 rounded px-2 py-1 inline-flex items-center space-x-1">
-                      <kbd className="font-sans">{action.shortcut.split('+')[0]}</kbd>
-                      <span>+</span>
-                      <kbd className="font-sans">{action.shortcut.split('+')[1]}</kbd>
-                    </div>
-                  </button>
-                );
-              })}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+              {quickActions.map((action, index) => (
+                <button
+                  key={index}
+                  className={`
+                    ${action.color} 
+                    text-white 
+                    p-3 sm:p-4 
+                    rounded-xl 
+                    shadow-lg 
+                    hover:shadow-xl 
+                    transform 
+                    hover:-translate-y-0.5 
+                    transition-all 
+                    duration-200
+                    flex 
+                    items-center 
+                    justify-center
+                    space-x-2
+                    text-sm
+                    sm:text-base
+                    font-medium
+                  `}
+                  title={action.description}
+                >
+                  <action.icon className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
+                  <span className="hidden sm:inline">{action.title}</span>
+                  <span className="sm:hidden text-xs">{action.shortcut}</span>
+                </button>
+              ))}
             </div>
           </SectionCard>
 
-          {/* Performance Metrics */}
+          {/* Responsive Performance Metrics */}
           <SectionCard 
             title="Performance Metrics"
             subtitle="Key performance indicators"
             icon={TrendingUpIcon}
           >
-            <div className="space-y-4">
-              {performanceMetrics.map((metric, index) => {
-                const Icon = metric.icon;
-                return (
-                  <div key={index} className={`
-                    flex items-center justify-between p-4 rounded-xl
-                    ${metric.bgColor} border border-gray-200
-                    hover:shadow-md transition-all duration-200
-                  `}>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+              {performanceMetrics.map((metric, index) => (
+                <div
+                  key={index}
+                  className={`
+                    bg-white rounded-2xl shadow-sm border border-gray-200 p-4 sm:p-6
+                    ${metric.bgColor}
+                  `}
+                >
+                  <div className="flex items-center justify-between mb-3 sm:mb-4">
                     <div className="flex items-center space-x-3">
-                      <div className={`
-                        w-10 h-10 bg-${metric.color}-500 rounded-lg 
-                        flex items-center justify-center
-                      `}>
-                        <Icon className="w-5 h-5 text-white" />
+                      <div className={`w-10 h-10 sm:w-12 sm:h-12 ${metric.color} rounded-xl flex items-center justify-center shadow-sm`}>
+                        <metric.icon className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                       </div>
                       <div>
-                        <p className="text-sm font-medium text-gray-900">{metric.title}</p>
-                        <p className="text-xs text-gray-600">{metric.description}</p>
+                        <h3 className="text-base sm:text-lg font-semibold text-gray-900">{metric.title}</h3>
+                        <p className="text-xs sm:text-sm text-gray-500">{metric.description}</p>
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className={`text-2xl font-bold text-${metric.color}-600`}>{metric.value}</p>
-                      <div className="flex items-center justify-end space-x-1">
-                        {metric.trend === 'up' ? (
-                          <ArrowUp className="w-4 h-4 text-green-500" />
-                        ) : (
-                          <ArrowDown className="w-4 h-4 text-red-500" />
+                      <span className={`text-2xl sm:text-3xl font-bold ${metric.color}`}>
+                        {metric.value}%
+                      </span>
+                      <div className={`flex items-center text-xs sm:text-sm ${metric.changeType === 'positive' ? 'text-green-600' : metric.changeType === 'negative' ? 'text-red-600' : 'text-gray-500'}`}>
+                        {metric.trend && (
+                          <metric.trend className="w-3 h-3 sm:w-4 sm:h-4 ml-1" />
                         )}
-                        <span className={`text-sm font-medium text-${metric.color}-600`}>
-                          {metric.change}
-                        </span>
+                        {metric.change}
                       </div>
                     </div>
                   </div>
-                );
-              })}
+                </div>
+              ))}
             </div>
           </SectionCard>
 
@@ -756,11 +786,11 @@ const Dashboard = () => {
               </div>
               <div className="bg-green-50 p-4 rounded-xl border border-green-200">
                 <div className="flex items-center space-x-2 mb-2">
-                  <Calendar className="w-4 h-4 text-green-600" />
-                  <span className="text-sm font-medium text-green-900">Appointments</span>
+                  <Users className="w-4 h-4 text-green-600" />
+                  <span className="text-sm font-medium text-green-900">Total Users</span>
                 </div>
-                <p className="text-2xl font-bold text-green-600">{stats.recentAppointments || 0}</p>
-                <p className="text-xs text-green-600">Today</p>
+                <p className="text-2xl font-bold text-green-600">{stats.totalUsers || 0}</p>
+                <p className="text-xs text-green-600">Registered</p>
               </div>
             </div>
           </SectionCard>
