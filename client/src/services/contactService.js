@@ -6,8 +6,8 @@ const contactService = {
     console.log('📦 Payload:', payload);
     
     try {
-      console.log('📡 Making API POST request to /contact...');
-      const response = await API.post('/contact', payload);
+      console.log('📡 Making API POST request to /api/contact...');
+      const response = await API.post('/api/contact', payload);
       console.log('✅ API Response received:', response);
       console.log('📊 Response data:', response.data);
       
