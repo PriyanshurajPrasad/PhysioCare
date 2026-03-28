@@ -11,24 +11,37 @@ const sseManager = require('../utils/sseManager');
  * @access Public
  */
 const getServices = asyncHandler(async (req, res) => {
+  console.log('🚀 ============================================');
+  console.log('🚀 GET SERVICES - REQUEST RECEIVED');
+  console.log('🚀 ============================================');
+  console.log('📝 Query Parameters:', JSON.stringify(req.query, null, 2));
+  console.log('📝 Headers:', JSON.stringify(req.headers, null, 2));
+  
   const { search, page = 1, limit = 10 } = req.query;
+
+  console.log('📊 Parsed Parameters:', { search, page, limit });
 
   let services;
 
-  if (search) {
-    // Search services by title or description
-    services = await Service.search(search)
-      .skip((page - 1) * limit)
-      .limit(parseInt(limit));
-  } else {
-    // Get only active services
-    services = await Service.findActive()
-      .skip((page - 1) * limit)
-      .limit(parseInt(limit));
-  }
+  try {
+    if (search) {
+      console.log('🔍 Searching services with query:', search);
+      // Search services by title or description
+      services = await Service.search(search)
+        .skip((page - 1) * limit)
+        .limit(parseInt(limit));
+    } else {
+      console.log('📋 Fetching all active services');
+      // Get only active services
+      services = await Service.findActive()
+        .skip((page - 1) * limit)
+        .limit(parseInt(limit));
+    }
 
-  // Get total count for pagination
-  const total = search 
+    console.log('✅ Services fetched from database:', services.length, 'services');
+
+    // Get total count for pagination
+    const total = search 
     ? await Service.countDocuments({
         $and: [
           { isActive: true },
@@ -42,18 +55,49 @@ const getServices = asyncHandler(async (req, res) => {
       })
     : await Service.countDocuments({ isActive: true });
 
-  res.json({
-    success: true,
-    data: {
-      services,
-      pagination: {
-        current: parseInt(page),
-        pageSize: parseInt(limit),
-        total,
-        pages: Math.ceil(total / limit)
+    console.log('📊 Total services count:', total);
+
+    const response = {
+      success: true,
+      data: {
+        services,
+        pagination: {
+          current: parseInt(page),
+          pageSize: parseInt(limit),
+          total,
+          pages: Math.ceil(total / limit)
+        }
       }
-    }
-  });
+    };
+
+    console.log('🎉 Sending success response:', JSON.stringify(response, null, 2));
+    console.log('🚀 ============================================');
+    
+    res.json(response);
+  } catch (error) {
+    console.error('❌ Error in getServices:', error);
+    console.error('Error details:', {
+      name: error.name,
+      message: error.message,
+      code: error.code,
+      stack: error.stack
+    });
+    
+    const errorResponse = {
+      success: false,
+      message: 'Failed to fetch services',
+      error: error.message,
+      ...(process.env.NODE_ENV === 'development' && { 
+        stack: error.stack,
+        details: error.errors
+      })
+    };
+
+    console.error('🔥 Sending error response:', JSON.stringify(errorResponse, null, 2));
+    console.error('🚀 ============================================');
+    
+    res.status(500).json(errorResponse);
+  }
 });
 
 /**
