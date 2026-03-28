@@ -134,7 +134,7 @@ const Dashboard = () => {
       value: stats?.totalMessages || '5',
       icon: MessageSquare,
       color: 'bg-purple-600',
-      change: '+3%',
+      change: '+3',
       changeType: 'positive'
     },
     {

@@ -4,7 +4,7 @@ import { CheckCircle, Clock, XCircle, AlertCircle } from 'lucide-react';
 const Badge = ({ 
   children, 
   variant = 'default', 
-  size = 'sm', 
+  size = 'sm',
   icon = null 
 }) => {
   const baseClasses = 'inline-flex items-center font-medium rounded-full';
@@ -44,7 +44,7 @@ const Badge = ({
       {IconComponent && (
         <IconComponent className="w-3 h-3 mr-1" />
       )}
-      <span className="max-w-[100px] truncate">{children}</span>
+      {children}
     </span>
   );
 };
