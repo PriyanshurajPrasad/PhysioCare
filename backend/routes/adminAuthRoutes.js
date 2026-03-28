@@ -6,7 +6,7 @@ const {
   getAdminProfile,
   debugAdmin
 } = require('../controllers/adminAuthController');
-const { protect } = require('../middleware/authMiddleware');
+const { protect, adminOnly } = require('../middleware/authMiddleware');
 
 const router = express.Router();
 
@@ -61,12 +61,14 @@ const handleValidationErrors = (req, res, next) => {
   next();
 };
 
-// Public routes
-router.post('/register', registerValidation, handleValidationErrors, registerAdmin);
+// Public routes (only login - registration disabled)
 router.post('/login', loginValidation, handleValidationErrors, loginAdmin);
 
 // Protected routes
-router.get('/me', protect, getAdminProfile);
-router.get('/debug-admin', protect, debugAdmin);
+router.get('/me', protect, adminOnly, getAdminProfile);
+router.get('/debug-admin', protect, adminOnly, debugAdmin);
+
+// Admin-only registration (only existing admins can create new admins)
+router.post('/register', protect, adminOnly, registerValidation, handleValidationErrors, registerAdmin);
 
 module.exports = router;

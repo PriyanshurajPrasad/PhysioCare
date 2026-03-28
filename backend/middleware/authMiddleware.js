@@ -40,6 +40,7 @@ const protect = async (req, res, next) => {
       console.log('✅ Admin authenticated:', admin.email);
       req.admin = admin;
       req.user = admin; // Keep for compatibility
+      req.tokenRole = decoded.role; // Store role from token
       next();
     } catch (error) {
       console.error('❌ Token verification error:', error);
@@ -61,10 +62,14 @@ const protect = async (req, res, next) => {
 
 // @desc    Admin only middleware
 const adminOnly = (req, res, next) => {
-  if ((req.admin && req.admin.role === 'admin') || (req.user && req.user.role === 'admin')) {
+  // Check both the user role and token role
+  const userRole = req.admin?.role || req.user?.role;
+  const tokenRole = req.tokenRole;
+
+  if (userRole === 'admin' && tokenRole === 'admin') {
     next();
   } else {
-    console.log('❌ Admin access denied');
+    console.log('❌ Admin access denied - User role:', userRole, 'Token role:', tokenRole);
     return res.status(403).json({
       success: false,
       message: 'Access denied. Admin only.'

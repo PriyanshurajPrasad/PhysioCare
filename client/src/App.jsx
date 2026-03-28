@@ -4,6 +4,7 @@ import { BrowserRouter } from 'react-router-dom';
 import PublicLayout from './layouts/PublicLayout';
 import AdminLayout from './layouts/AdminLayout';
 import AdminProtectedRoute from './components/AdminProtectedRoute';
+import UserProtectedRoute from './components/UserProtectedRoute';
 import ErrorBoundary from './components/ErrorBoundary';
 import NotFound from './pages/NotFound';
 import TestPage from './pages/TestPage';
@@ -18,13 +19,16 @@ import Contact from './pages/public/Contact';
 
 // Admin pages
 import AdminLogin from './pages/admin/AdminLogin';
-import AdminRegister from './pages/admin/AdminRegister';
 import Dashboard from './pages/admin/Dashboard';
 import Appointments from './pages/admin/Appointments';
 import Messages from './pages/admin/Messages';
 import AdminServices from './pages/admin/Services';
 import Testimonials from './pages/admin/Testimonials';
 import Profile from './pages/admin/Profile';
+
+// User pages
+import UserLogin from './pages/user/UserLogin';
+import UserRegister from './pages/user/UserRegister';
 
 function App() {
   return (
@@ -40,9 +44,30 @@ function App() {
             <Route path="contact" element={<Contact />} />
           </Route>
 
+          {/* User Auth Routes (standalone, no layout) */}
+          <Route path="/user/login" element={<UserLogin />} />
+          <Route path="/user/register" element={<UserRegister />} />
+
+          {/* User Routes - redirect /user to /user/login */}
+          <Route path="/user" element={<Navigate to="/user/login" replace />} />
+
+          {/* Protected User Routes */}
+          <Route path="/user" element={
+            <UserProtectedRoute>
+              {/* User dashboard and other user pages will go here */}
+              <div className="min-h-screen flex items-center justify-center bg-gray-50">
+                <div className="text-center">
+                  <h1 className="text-3xl font-bold text-gray-900 mb-4">User Dashboard</h1>
+                  <p className="text-gray-600">User panel coming soon...</p>
+                </div>
+              </div>
+            </UserProtectedRoute>
+          }>
+            <Route path="dashboard" element={<div>User Dashboard</div>} />
+          </Route>
+
           {/* Admin Auth Routes (standalone, no layout) */}
           <Route path="/admin/login" element={<AdminLogin />} />
-          <Route path="/admin/register" element={<AdminRegister />} />
 
           {/* Admin Routes - redirect /admin to /admin/login */}
           <Route path="/admin" element={<Navigate to="/admin/login" replace />} />

@@ -63,8 +63,8 @@ const registerAdmin = asyncHandler(async (req, res) => {
     await admin.save();
     console.log('✅ Admin registered successfully:', email);
 
-    // Generate token
-    const token = generateToken(admin._id);
+    // Generate token with role
+    const token = generateToken(admin._id, admin.role);
 
     res.status(201).json({
       success: true,
@@ -181,8 +181,8 @@ const loginAdmin = asyncHandler(async (req, res) => {
     admin.lastLogin = new Date();
     await admin.save();
 
-    // Generate token
-    const token = generateToken(admin._id);
+    // Generate token with role
+    const token = generateToken(admin._id, admin.role);
 
     console.log('✅ Admin logged in successfully:', email);
 

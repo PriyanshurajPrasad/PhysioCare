@@ -26,15 +26,31 @@ const AdminProtectedRoute = ({ children }) => {
       return <Navigate to="/admin/login" state={{ from: location }} replace />;
     }
 
-    // Validate admin data
+    // Validate admin data and role
     if (!adminData || !adminData.email || adminData.role !== 'admin') {
-      console.log('🔐 Invalid admin data, redirecting to login');
+      console.log('🔐 Invalid admin data or role, redirecting to login');
       localStorage.removeItem('admin_token');
       localStorage.removeItem('admin_user');
       return <Navigate to="/admin/login" state={{ from: location }} replace />;
     }
 
-    console.log('✅ Admin authenticated:', adminData.email);
+    // Verify JWT token contains admin role
+    try {
+      const tokenPayload = JSON.parse(atob(adminToken.split('.')[1]));
+      if (tokenPayload.role !== 'admin') {
+        console.log('🔐 Token does not contain admin role, redirecting to login');
+        localStorage.removeItem('admin_token');
+        localStorage.removeItem('admin_user');
+        return <Navigate to="/admin/login" state={{ from: location }} replace />;
+      }
+    } catch (tokenError) {
+      console.log('🔐 Invalid JWT token, redirecting to login');
+      localStorage.removeItem('admin_token');
+      localStorage.removeItem('admin_user');
+      return <Navigate to="/admin/login" state={{ from: location }} replace />;
+    }
+
+    console.log('✅ Admin authenticated and verified:', adminData.email);
     return children;
     
   } catch (error) {
