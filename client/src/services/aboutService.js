@@ -31,7 +31,7 @@ export const getAboutContent = async () => {
 // Get About Us content for admin
 export const getAboutContentForAdmin = async () => {
   try {
-    const response = await api.get('/about/admin');
+    const response = await api.get('/api/admin/about');
     console.log('About Admin API Response:', response.data); // Debug log
     return response.data;
   } catch (error) {
@@ -49,7 +49,7 @@ export const getAboutContentForAdmin = async () => {
 // Update About Us content (admin only)
 export const updateAboutContent = async (aboutData) => {
   try {
-    const response = await api.post('/about/admin', aboutData);
+    const response = await api.post('/api/admin/about', aboutData);
     console.log('About Update API Response:', response.data); // Debug log
     return response.data;
   } catch (error) {
