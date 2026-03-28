@@ -8,35 +8,74 @@ const emailService = require('../utils/emailService');
  * @access   Public
  */
 const createContact = asyncHandler(async (req, res) => {
+  console.log('🚀 ============================================');
+  console.log('🚀 CREATE CONTACT - REQUEST RECEIVED');
+  console.log('🚀 ============================================');
+  console.log('📝 Request Body:', JSON.stringify(req.body, null, 2));
+  console.log('📝 Headers:', JSON.stringify(req.headers, null, 2));
+  
   const { name, email, phone, subject, message, priority } = req.body;
+
+  // Validate required fields
+  if (!name || !email || !subject || !message) {
+    console.log('❌ Missing required fields:', { name: !!name, email: !!email, subject: !!subject, message: !!message });
+    return res.status(400).json({
+      success: false,
+      message: 'Missing required fields',
+      errors: [
+        ...(name ? [] : [{ field: 'name', message: 'Name is required' }]),
+        ...(email ? [] : [{ field: 'email', message: 'Email is required' }]),
+        ...(subject ? [] : [{ field: 'subject', message: 'Subject is required' }]),
+        ...(message ? [] : [{ field: 'message', message: 'Message is required' }])
+      ]
+    });
+  }
 
   let contact;
   let emailSent = false;
   let emailError = null;
 
   try {
+    console.log('💾 Attempting to save contact to database...');
+    console.log('📦 Contact Data:', { name, email, phone: phone || 'Not provided', subject, message, priority: priority || 'medium' });
+    
     // Save contact to database first
     contact = await Contact.create({
       name,
       email,
-      phone,
+      phone: phone || '', // Make phone optional
       subject,
       message,
       priority: priority || 'medium'
     });
 
-    console.log('✅ Contact saved to database:', {
+    console.log('✅ Contact saved to database successfully:', {
       contactId: contact._id,
       name: contact.name,
-      email: contact.email
+      email: contact.email,
+      phone: contact.phone,
+      subject: contact.subject,
+      priority: contact.priority,
+      createdAt: contact.createdAt
     });
 
   } catch (dbError) {
     console.error('❌ Database save failed:', dbError);
+    console.error('Database Error Details:', {
+      name: dbError.name,
+      message: dbError.message,
+      code: dbError.code,
+      errors: dbError.errors
+    });
+    
     return res.status(500).json({
       success: false,
-      message: 'Failed to save contact',
-      error: dbError.message
+      message: 'Failed to save contact to database',
+      error: dbError.message,
+      ...(process.env.NODE_ENV === 'development' && { 
+        details: dbError.errors,
+        stack: dbError.stack 
+      })
     });
   }
 
@@ -94,6 +133,9 @@ This is an automated notification from PhysioCare Clinic Contact Form.
   `;
 
   try {
+    console.log('📧 Attempting to send email notification...');
+    console.log('📧 Email Service Status:', emailService.getStatus());
+    
     // Send email notification to admin using Resend
     const emailResult = await emailService.sendEmail({
       to: "priyanshurajprasad999@gmail.com",
@@ -101,6 +143,8 @@ This is an automated notification from PhysioCare Clinic Contact Form.
       html: emailHtml,
       text: emailText
     });
+
+    console.log('📧 Email Service Response:', emailResult);
 
     if (emailResult.success) {
       emailSent = true;
@@ -112,21 +156,49 @@ This is an automated notification from PhysioCare Clinic Contact Form.
     } else {
       emailError = emailResult.error;
       console.error('❌ Email sending failed:', emailResult.error);
+      console.log('📧 Email failed but contact was saved - continuing...');
     }
 
   } catch (error) {
     console.error('❌ Email sending error:', error);
+    console.error('Email Error Details:', {
+      name: error.name,
+      message: error.message,
+      code: error.code,
+      stack: error.stack
+    });
     emailError = error.message;
+    console.log('📧 Email failed but contact was saved - continuing...');
   }
 
-  // Always return success response since contact was saved
-  res.status(201).json({
+  console.log('📋 Preparing final response...');
+  console.log('📋 Response Data:', {
     success: true,
-    message: emailSent ? 'Contact form submitted successfully' : 'Contact form submitted successfully (email notification failed)',
-    data: contact,
+    emailSent: emailSent,
+    emailError: emailError,
+    contactId: contact._id
+  });
+
+  // Always return success response since contact was saved
+  const response = {
+    success: true,
+    message: emailSent ? 
+      'Contact form submitted successfully' : 
+      'Contact form submitted successfully (email notification failed)',
+    data: {
+      id: contact._id,
+      name: contact.name,
+      email: contact.email,
+      subject: contact.subject,
+      priority: contact.priority,
+      createdAt: contact.createdAt
+    },
     emailSent: emailSent,
     emailError: emailError
-  });
+  };
+
+  console.log('🎉 Sending final response:', JSON.stringify(response, null, 2));
+  res.status(201).json(response);
 });
 
 /**

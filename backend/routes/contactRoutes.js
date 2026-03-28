@@ -27,11 +27,12 @@ const contactValidation = [
     .withMessage('Please provide a valid email')
     .normalizeEmail(),
   body('phone')
+    .optional()
     .trim()
-    .notEmpty()
-    .withMessage('Phone number is required')
     .isLength({ max: 20 })
-    .withMessage('Phone cannot exceed 20 characters'),
+    .withMessage('Phone cannot exceed 20 characters')
+    .matches(/^[+]?[\d\s\-\(\)]+$/)
+    .withMessage('Please enter a valid phone number'),
   body('subject')
     .trim()
     .notEmpty()
@@ -46,8 +47,8 @@ const contactValidation = [
     .withMessage('Message must be between 10 and 2000 characters'),
   body('priority')
     .optional()
-    .isIn(['low', 'medium', 'high', 'urgent'])
-    .withMessage('Priority must be: low, medium, high, or urgent')
+    .isIn(['low', 'medium', 'high'])
+    .withMessage('Priority must be: low, medium, or high')
 ];
 
 const replyValidation = [

@@ -24,10 +24,8 @@ const contactSchema = new mongoose.Schema({
   phone: {
     type: String,
     trim: true,
-    match: [
-      /^[+]?[\d\s-()]+$/,
-      'Please enter a valid phone number'
-    ]
+    default: '', // Make phone optional with empty string default
+    maxlength: [20, 'Phone cannot exceed 20 characters']
   },
   message: {
     type: String,

@@ -122,17 +122,21 @@ const Contact = () => {
         // Show more detailed error information
         let errorMessage = response.error || 'Failed to send message. Please try again.';
         
+        // Handle specific error types
         if (response.status === 404) {
           errorMessage = 'Service not found. Please contact support.';
         } else if (response.status === 500) {
-          errorMessage = 'Server error. Please try again later.';
+          errorMessage = response.error || 'Server error. Please try again later.';
         } else if (response.status === 400) {
-          errorMessage = 'Invalid form data. Please check your inputs.';
-        }
-        
-        // Add validation errors if present
-        if (response.errors && response.errors.length > 0) {
-          errorMessage += ' ' + response.errors.map(err => err.msg || err.message).join(', ');
+          errorMessage = response.error || 'Invalid form data. Please check your inputs.';
+          
+          // Add validation errors if present
+          if (response.errors && response.errors.length > 0) {
+            const validationErrors = response.errors.map(err => 
+              `${err.field}: ${err.message}`
+            ).join(', ');
+            errorMessage += ` (${validationErrors})`;
+          }
         }
         
         setError(errorMessage);
@@ -143,9 +147,46 @@ const Contact = () => {
         message: err.message,
         customMessage: err.customMessage,
         response: err.response,
-        request: err.request
+        request: err.request,
+        config: err.config
       });
-      setError(err.error || err.customMessage || err.message || 'Failed to send message. Please try again.');
+      
+      // Handle different error types
+      let errorMessage = 'Failed to send message. Please try again.';
+      
+      if (err.response) {
+        // Server responded with error status
+        const status = err.response.status;
+        const data = err.response.data;
+        
+        console.log('🔴 Server Error Response:', { status, data });
+        
+        if (status === 400) {
+          errorMessage = data.message || 'Invalid form data. Please check your inputs.';
+          if (data.errors && data.errors.length > 0) {
+            const validationErrors = data.errors.map(err => 
+              `${err.field}: ${err.message}`
+            ).join(', ');
+            errorMessage += ` (${validationErrors})`;
+          }
+        } else if (status === 404) {
+          errorMessage = 'Service not found. Please contact support.';
+        } else if (status === 500) {
+          errorMessage = data.message || 'Server error. Please try again later.';
+        } else {
+          errorMessage = data.message || `Request failed with status ${status}`;
+        }
+      } else if (err.request) {
+        // Network error
+        console.log('🌐 Network Error - No response received');
+        errorMessage = 'Network error. Please check your connection and try again.';
+      } else {
+        // Other error
+        console.log('⚠️ Other Error Type:', err);
+        errorMessage = err.message || 'An unexpected error occurred';
+      }
+      
+      setError(errorMessage);
     } finally {
       setLoading(false);
       console.log('🏁 Contact Form Submit Ended');

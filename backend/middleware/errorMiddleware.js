@@ -6,8 +6,21 @@ const errorHandler = (err, req, res, next) => {
   let error = { ...err };
   error.message = err.message;
 
-  // Log error
-  console.error(err);
+  // Enhanced error logging
+  console.error('===============================================');
+  console.error('ERROR HANDLER - ERROR DETAILS');
+  console.error('===============================================');
+  console.error('Request URL:', req.originalUrl);
+  console.error('Request Method:', req.method);
+  console.error('Request Body:', JSON.stringify(req.body, null, 2));
+  console.error('Headers:', JSON.stringify(req.headers, null, 2));
+  console.error('Error Name:', err.name);
+  console.error('Error Message:', err.message);
+  console.error('Error Code:', err.code);
+  console.error('Error Status:', err.statusCode);
+  console.error('Full Error:', JSON.stringify(err, null, 2));
+  console.error('Stack Trace:', err.stack);
+  console.error('===============================================');
 
   // Mongoose bad ObjectId
   if (err.name === 'CastError') {
@@ -26,7 +39,8 @@ const errorHandler = (err, req, res, next) => {
   if (err.name === 'ValidationError') {
     const errors = Object.values(err.errors).map(error => ({
       field: error.path,
-      message: error.message
+      message: error.message,
+      value: error.value
     }));
     error = { 
       message: 'Validation failed',
@@ -50,12 +64,22 @@ const errorHandler = (err, req, res, next) => {
   const statusCode = error.statusCode || err.statusCode || 500;
   const message = error.message || 'Internal Server Error';
 
-  res.status(statusCode).json({
+  const response = {
     success: false,
     message: message,
     ...(error.errors && { errors: error.errors }),
-    ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
-  });
+    ...(process.env.NODE_ENV === 'development' && { 
+      stack: err.stack,
+      originalError: err,
+      requestBody: req.body,
+      requestHeaders: req.headers
+    })
+  };
+
+  console.error('Final Error Response:', JSON.stringify(response, null, 2));
+  console.error('===============================================');
+
+  res.status(statusCode).json(response);
 };
 
 const notFound = (req, res, next) => {
