@@ -8,7 +8,7 @@ const AdminLayout = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-gray-100 flex">
       {/* Mobile sidebar overlay */}
       {sidebarOpen && (
         <div 
@@ -35,11 +35,11 @@ const AdminLayout = () => {
 
       {/* Main Content Area */}
       <div className={`
-        transition-all duration-300 ease-in-out
+        flex-1 min-w-0 transition-all duration-300 ease-in-out
         ${sidebarCollapsed ? 'lg:ml-20' : 'lg:ml-64'}
       `}>
         {/* Topbar */}
-        <div className="bg-white border-b border-gray-200 shadow-sm">
+        <div className="bg-white border-b border-gray-200 shadow-sm sticky top-0 z-30">
           <AdminTopbar 
             onMenuClick={() => setSidebarOpen(!sidebarOpen)}
             sidebarCollapsed={sidebarCollapsed}
@@ -47,9 +47,11 @@ const AdminLayout = () => {
         </div>
 
         {/* Page Content */}
-        <main className="p-4 bg-gray-100 min-h-screen">
-          <div className="max-w-full">
-            <Outlet />
+        <main className="p-4 sm:p-6 bg-gray-100 min-h-screen">
+          <div className="max-w-full overflow-x-hidden">
+            <div className="mx-auto w-full">
+              <Outlet />
+            </div>
           </div>
         </main>
       </div>

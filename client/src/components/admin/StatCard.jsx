@@ -11,19 +11,35 @@ const StatCard = ({
   loading = false 
 }) => {
   return (
-    <div className="bg-white rounded-lg shadow border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200">
-      <div className="flex items-center justify-between mb-4">
-        <div className={`w-12 h-12 ${color} rounded-lg flex items-center justify-center`}>
-          <Icon className="w-6 h-6 text-white" />
+    <div className="bg-white rounded-lg shadow border border-gray-200 p-4 sm:p-6 hover:shadow-md transition-all duration-200">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center space-x-3 sm:space-x-4">
+          <div className={`
+            w-10 h-10 sm:w-12 sm:h-12 
+            ${color} 
+            rounded-lg flex items-center justify-center
+            flex-shrink-0
+          `}>
+            <Icon className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm sm:text-base font-semibold text-gray-900 break-words">{title}</p>
+            <p className="text-xs sm:text-sm text-gray-500">Last 30 days</p>
+          </div>
         </div>
+        
         {change && (
-          <div className="flex items-center text-sm font-medium">
+          <div className="flex items-center space-x-1">
             {changeType === 'positive' ? (
-              <TrendingUp className="w-4 h-4 mr-1 text-green-600" />
+              <TrendingUp className="w-4 h-4 text-green-500 flex-shrink-0" />
             ) : (
-              <TrendingDown className="w-4 h-4 mr-1 text-red-600" />
+              <TrendingDown className="w-4 h-4 text-red-500 flex-shrink-0" />
             )}
-            <span className={changeType === 'positive' ? 'text-green-600' : 'text-red-600'}>
+            <span className={`
+              text-sm font-medium
+              ${changeType === 'positive' ? 'text-green-600' : 'text-red-600'}
+              whitespace-nowrap
+            `}>
               {change}
             </span>
           </div>

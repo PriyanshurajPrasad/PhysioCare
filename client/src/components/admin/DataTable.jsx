@@ -33,36 +33,57 @@ const DataTable = ({
   }
 
   return (
-    <div className="overflow-x-auto bg-white rounded-lg shadow border border-gray-200">
-      <table className={`w-full ${className}`}>
-        <thead className="bg-gray-50">
-          <tr className="border-b border-gray-200">
-            {columns.map((column, index) => (
-              <th
-                key={index}
-                className="text-left py-3 px-4 font-semibold text-sm text-gray-700"
-                style={{ width: column.width }}
-              >
-                {column.header}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody className="bg-white divide-y divide-gray-200">
-          {data.map((row, rowIndex) => (
-            <tr key={rowIndex} className="hover:bg-gray-50">
-              {columns.map((column, colIndex) => (
-                <td
-                  key={colIndex}
-                  className="py-3 px-4 text-sm text-gray-900"
+    <div className="bg-white rounded-lg shadow border border-gray-200 overflow-hidden">
+      {/* Mobile table container with horizontal scroll */}
+      <div className="overflow-x-auto">
+        <table className={`w-full min-w-full ${className}`}>
+          <thead className="bg-gray-50">
+            <tr className="border-b border-gray-200">
+              {columns.map((column, index) => (
+                <th
+                  key={index}
+                  className="text-left py-3 px-2 sm:px-4 font-semibold text-sm text-gray-700 whitespace-nowrap"
+                  style={{ minWidth: column.width || '120px' }}
                 >
-                  {column.render ? column.render(row[column.key], row) : row[column.key]}
-                </td>
+                  {column.header}
+                </th>
               ))}
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {data.map((row, rowIndex) => (
+              <tr key={rowIndex} className="border-b border-gray-200 hover:bg-gray-50 transition-colors duration-150">
+                {columns.map((column, colIndex) => (
+                  <td
+                    key={colIndex}
+                    className="py-3 px-2 sm:px-4 text-sm text-gray-900 whitespace-nowrap"
+                  >
+                    {column.render ? column.render(row) : row[column.accessor]}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      
+      {/* Mobile card view for small screens */}
+      <div className="lg:hidden">
+        {data.map((row, index) => (
+          <div key={index} className="border-b border-gray-200 p-4 space-y-3">
+            {columns.map((column, colIndex) => (
+              <div key={colIndex} className="flex justify-between items-start">
+                <span className="text-sm font-medium text-gray-700 min-w-0 flex-shrink-0">
+                  {column.header}:
+                </span>
+                <span className="text-sm text-gray-900 text-right flex-1 min-w-0">
+                  {column.render ? column.render(row) : row[column.accessor]}
+                </span>
+              </div>
+            ))}
+          </div>
+        ))}
+      </div>
     </div>
   );
 };

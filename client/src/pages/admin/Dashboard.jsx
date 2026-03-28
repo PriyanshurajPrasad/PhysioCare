@@ -190,9 +190,9 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="space-y-6">
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div className="space-y-4 sm:space-y-6">
+      {/* Stats Cards - Responsive Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         {statCards.map((card, index) => (
           <StatCard
             key={index}
@@ -207,7 +207,7 @@ const Dashboard = () => {
       </div>
 
       {/* Main Content Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 sm:gap-6">
         {/* Recent Activity */}
         <div className="space-y-4">
           <SectionCard 
@@ -215,20 +215,20 @@ const Dashboard = () => {
             subtitle="Latest updates and notifications"
             icon={Activity}
             headerAction={
-              <button className="text-blue-600 hover:text-blue-800 text-sm font-medium">
+              <button className="text-blue-600 hover:text-blue-800 text-sm font-medium transition-colors duration-200">
                 View All
               </button>
             }
           >
             <div className="space-y-3">
               {recentActivity.map((activity, index) => (
-                <div key={activity.id} className="flex items-start space-x-3 p-3 hover:bg-gray-50 rounded">
+                <div key={activity.id} className="flex items-start space-x-3 p-3 hover:bg-gray-50 rounded-lg transition-colors duration-200">
                   <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
                     <activity.icon className="w-4 h-4 text-blue-600" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-900">{activity.title}</p>
-                    <p className="text-xs text-gray-500">{activity.description}</p>
+                    <p className="text-sm font-medium text-gray-900 break-words">{activity.title}</p>
+                    <p className="text-xs text-gray-500 break-words">{activity.description}</p>
                     <p className="text-xs text-gray-400">{activity.time}</p>
                   </div>
                 </div>
@@ -247,21 +247,21 @@ const Dashboard = () => {
             <div className="space-y-3">
               {Array.isArray(appointments) && appointments.length > 0 ? (
                 appointments.slice(0, 3).map((appointment, index) => (
-                  <div key={appointment.id || index} className="flex items-center justify-between p-3 hover:bg-gray-50 rounded border-b border-gray-100 last:border-b-0">
+                  <div key={appointment.id || index} className="flex flex-col sm:flex-row sm:items-center justify-between p-3 hover:bg-gray-50 rounded-lg border-b border-gray-100 last:border-b-0 space-y-2 sm:space-y-0">
                     <div className="flex items-center space-x-3">
-                      <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                      <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
                         <CheckCircle className="w-4 h-4 text-green-600" />
                       </div>
-                      <div>
-                        <p className="text-sm font-medium text-gray-900">
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-gray-900 break-words">
                           {safeFallback(appointment.patientName, 'Unknown Patient')}
                         </p>
-                        <p className="text-xs text-gray-500">
+                        <p className="text-xs text-gray-500 break-words">
                           {safeFallback(appointment.time) || safeFallback(appointment.preferredDate, 'No time specified')}
                         </p>
                       </div>
                     </div>
-                    <button className="text-blue-600 hover:text-blue-800 text-sm">
+                    <button className="text-blue-600 hover:text-blue-800 text-sm py-2 px-4 rounded-lg border border-blue-200 hover:bg-blue-50 transition-colors duration-200 w-full sm:w-auto">
                       View Details
                     </button>
                   </div>

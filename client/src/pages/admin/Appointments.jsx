@@ -478,37 +478,38 @@ const Appointments = () => {
 
   return (
     <>
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-gray-50 overflow-x-hidden">
       {/* Modern Header with Stats */}
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
-        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-          <div className="flex items-center space-x-4">
-            <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg">
-              <CalendarDays className="w-6 h-6 text-white" />
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-4 sm:p-6">
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 sm:gap-6">
+          <div className="flex items-center space-x-3 sm:space-x-4">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg">
+              <CalendarDays className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">Appointments</h1>
-              <p className="text-sm text-gray-500">Manage patient appointments and schedules</p>
+              <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Appointments</h1>
+              <p className="text-xs sm:text-sm text-gray-500 hidden sm:block">Manage patient appointments and schedules</p>
             </div>
           </div>
           
-          <div className="flex items-center space-x-3">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
             {/* View Mode Toggle */}
             <div className="flex items-center bg-gray-50 rounded-xl p-1">
               {['list', 'grid', 'calendar'].map((mode) => (
                 <button
                   key={mode}
                   onClick={() => setViewMode(mode)}
-                  className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                  className={`px-2 sm:px-3 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all duration-200 ${
                     viewMode === mode 
                       ? 'bg-white text-blue-600 shadow-sm' 
                       : 'text-gray-600 hover:text-gray-900'
                   }`}
                 >
-                  {mode === 'list' && <Filter className="w-4 h-4 mr-2" />}
-                  {mode === 'grid' && <Calendar className="w-4 h-4 mr-2" />}
-                  {mode === 'calendar' && <CalendarDays className="w-4 h-4 mr-2" />}
-                  {mode.charAt(0).toUpperCase() + mode.slice(1)}
+                  {mode === 'list' && <Filter className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />}
+                  {mode === 'grid' && <Calendar className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />}
+                  {mode === 'calendar' && <CalendarDays className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />}
+                  <span className="hidden sm:inline">{mode.charAt(0).toUpperCase() + mode.slice(1)}</span>
+                  <span className="sm:hidden">{mode === 'list' ? '📋' : mode === 'grid' ? '📱' : '📅'}</span>
                 </button>
               ))}
             </div>
@@ -516,31 +517,33 @@ const Appointments = () => {
             {/* New Appointment Button */}
             <button 
               onClick={openCreateModal}
-              className="flex items-center px-4 py-2.5 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl hover:from-blue-600 hover:to-blue-700 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200"
+              className="flex items-center justify-center px-3 sm:px-4 py-2 sm:py-2.5 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl hover:from-blue-600 hover:to-blue-700 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 text-sm sm:font-medium"
             >
-              <Plus className="w-5 h-5 mr-2" />
-              New Appointment
+              <Plus className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" />
+              <span className="hidden sm:inline">New Appointment</span>
+              <span className="sm:hidden">New</span>
             </button>
           </div>
         </div>
       </div>
 
       {/* Advanced Filters */}
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold text-gray-900">Filters & Search</h2>
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-4 sm:p-6">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+          <h2 className="text-base sm:text-lg font-semibold text-gray-900">Filters & Search</h2>
           <button
             onClick={() => setShowFilters(!showFilters)}
-            className="flex items-center text-blue-600 hover:text-blue-800 text-sm font-medium"
+            className="flex items-center justify-center text-blue-600 hover:text-blue-800 text-sm font-medium px-3 py-2 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors"
           >
             <Filter className="w-4 h-4 mr-2" />
             {showFilters ? 'Hide Filters' : 'Show Filters'}
           </button>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {/* Search */}
           <div className="lg:col-span-2">
+            <label className="block text-sm font-medium text-gray-700 mb-2">Search</label>
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
               <input
@@ -601,7 +604,7 @@ const Appointments = () => {
             {searchTerm && (
               <div className="flex items-center px-3 py-1 bg-blue-100 text-blue-700 rounded-lg">
                 <Search className="w-4 h-4 mr-2" />
-                {searchTerm}
+                <span className="text-sm truncate max-w-xs">{searchTerm}</span>
                 <button
                   onClick={() => setSearchTerm('')}
                   className="ml-2 text-blue-600 hover:text-blue-800"
@@ -613,7 +616,7 @@ const Appointments = () => {
             {statusFilter !== 'all' && (
               <div className="flex items-center px-3 py-1 bg-gray-100 text-gray-700 rounded-lg">
                 <Filter className="w-4 h-4 mr-2" />
-                Status: {statusFilter}
+                <span className="text-sm">Status: {statusFilter}</span>
                 <button
                   onClick={() => setStatusFilter('all')}
                   className="ml-2 text-gray-600 hover:text-gray-800"
@@ -625,7 +628,7 @@ const Appointments = () => {
             {dateFilter !== 'all' && (
               <div className="flex items-center px-3 py-1 bg-gray-100 text-gray-700 rounded-lg">
                 <Calendar className="w-4 h-4 mr-2" />
-                {dateFilter}
+                <span className="text-sm">{dateFilter}</span>
                 <button
                   onClick={() => setDateFilter('all')}
                   className="ml-2 text-gray-600 hover:text-gray-800"
@@ -639,47 +642,47 @@ const Appointments = () => {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-        <div className="bg-gradient-to-br from-blue-500 to-blue-600 text-white p-6 rounded-2xl shadow-lg">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6">
+        <div className="bg-gradient-to-br from-blue-500 to-blue-600 text-white p-4 sm:p-6 rounded-2xl shadow-lg">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-3xl font-bold">{appointments.length}</p>
-              <p className="text-blue-100">Total</p>
+              <p className="text-2xl sm:text-3xl font-bold">{appointments.length}</p>
+              <p className="text-blue-100 text-sm sm:text-base">Total</p>
             </div>
-            <CalendarDays className="w-8 h-8 text-blue-100" />
+            <CalendarDays className="w-6 h-6 sm:w-8 sm:h-8 text-blue-100" />
           </div>
         </div>
-        <div className="bg-gradient-to-br from-emerald-500 to-emerald-600 text-white p-6 rounded-2xl shadow-lg">
+        <div className="bg-gradient-to-br from-emerald-500 to-emerald-600 text-white p-4 sm:p-6 rounded-2xl shadow-lg">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-3xl font-bold">
+              <p className="text-2xl sm:text-3xl font-bold">
                 {appointments.filter(a => a.status === 'confirmed').length}
               </p>
-              <p className="text-emerald-100">Confirmed</p>
+              <p className="text-emerald-100 text-sm sm:text-base">Confirmed</p>
             </div>
-            <CheckCircle className="w-8 h-8 text-emerald-100" />
+            <CheckCircle className="w-6 h-6 sm:w-8 sm:h-8 text-emerald-100" />
           </div>
         </div>
-        <div className="bg-gradient-to-br from-amber-500 to-amber-600 text-white p-6 rounded-2xl shadow-lg">
+        <div className="bg-gradient-to-br from-amber-500 to-amber-600 text-white p-4 sm:p-6 rounded-2xl shadow-lg">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-3xl font-bold">
+              <p className="text-2xl sm:text-3xl font-bold">
                 {appointments.filter(a => a.status === 'pending').length}
               </p>
-              <p className="text-amber-100">Pending</p>
+              <p className="text-amber-100 text-sm sm:text-base">Pending</p>
             </div>
-            <Clock className="w-8 h-8 text-amber-100" />
+            <Clock className="w-6 h-6 sm:w-8 sm:h-8 text-amber-100" />
           </div>
         </div>
-        <div className="bg-gradient-to-br from-red-500 to-red-600 text-white p-6 rounded-2xl shadow-lg">
+        <div className="bg-gradient-to-br from-red-500 to-red-600 text-white p-4 sm:p-6 rounded-2xl shadow-lg">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-3xl font-bold">
+              <p className="text-2xl sm:text-3xl font-bold">
                 {appointments.filter(a => a.status === 'cancelled').length}
               </p>
-              <p className="text-red-100">Cancelled</p>
+              <p className="text-red-100 text-sm sm:text-base">Cancelled</p>
             </div>
-            <X className="w-8 h-8 text-red-100" />
+            <X className="w-6 h-6 sm:w-8 sm:h-8 text-red-100" />
           </div>
         </div>
       </div>
@@ -687,120 +690,202 @@ const Appointments = () => {
       {/* Appointments List/Grid/Calendar View */}
       <div className="bg-white rounded-2xl shadow-sm border border-gray-200">
         {filteredAppointments.length === 0 ? (
-          <div className="text-center py-12">
-            <Calendar className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">No appointments found</h3>
-            <p className="text-gray-500">Try adjusting your filters or create a new appointment</p>
+          <div className="text-center py-8 sm:py-12 px-4">
+            <Calendar className="w-12 h-12 sm:w-16 sm:h-16 text-gray-300 mx-auto mb-4" />
+            <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-2">No appointments found</h3>
+            <p className="text-sm sm:text-base text-gray-500 mb-6">Try adjusting your filters or create a new appointment</p>
             <button 
               onClick={openCreateModal}
-              className="mt-4 px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors font-medium shadow-lg hover:shadow-xl"
+              className="w-full sm:w-auto px-4 sm:px-6 py-2.5 sm:py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors font-medium shadow-lg hover:shadow-xl text-sm sm:text-base"
             >
-              <Plus className="w-5 h-5 mr-2" />
+              <Plus className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
               Create First Appointment
             </button>
           </div>
         ) : (
-          <div className={viewMode === 'calendar' ? 'p-6' : 'overflow-x-auto'}>
+          <div className={viewMode === 'calendar' ? 'p-4 sm:p-6' : 'overflow-x-auto'}>
             {viewMode === 'list' && (
               <div className="divide-y divide-gray-200">
                 {filteredAppointments.map((appointment) => (
-                  <div key={appointment._id} className="p-6 hover:bg-gray-50 transition-colors duration-200">
-                    <div className="flex items-start justify-between">
-                      <div className="flex items-start space-x-4 flex-1">
-                        {/* Priority Indicator */}
-                        <div className={`
-                          w-3 h-3 rounded-full
-                          ${getPriorityColor(appointment.priority)}
-                        `}>
-                        </div>
-                        
-                        {/* Patient Info */}
-                        <div className="flex-1">
-                          <div className="flex items-center space-x-3 mb-3">
-                            <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-violet-600 rounded-full flex items-center justify-center text-white font-medium shadow-sm">
+                  <div key={appointment._id} className="p-4 sm:p-6 hover:bg-gray-50 transition-colors duration-200">
+                    {/* Mobile Card Layout */}
+                    <div className="lg:hidden">
+                      <div className="space-y-4">
+                        {/* Header with patient info and priority */}
+                        <div className="flex items-start justify-between">
+                          <div className="flex items-center space-x-3 flex-1">
+                            <div className={`w-3 h-3 rounded-full flex-shrink-0 ${getPriorityColor(appointment.priority)}`}></div>
+                            <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-violet-600 rounded-full flex items-center justify-center text-white font-medium shadow-sm flex-shrink-0">
                               {appointment.patientName?.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)}
                             </div>
-                            <div>
-                              <h3 className="text-lg font-semibold text-gray-900">{appointment.patientName}</h3>
-                              <div className="flex items-center space-x-2 text-sm text-gray-500">
-                                <Mail className="w-4 h-4" />
-                                <span>{appointment.email}</span>
+                            <div className="flex-1 min-w-0">
+                              <h3 className="text-base font-semibold text-gray-900 truncate">{appointment.patientName}</h3>
+                              <div className="flex items-center space-x-2 text-xs sm:text-sm text-gray-500">
+                                <Mail className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
+                                <span className="truncate">{appointment.email}</span>
                               </div>
                             </div>
                           </div>
-                          
-                          {/* Contact Info */}
-                          <div className="flex items-center space-x-4 text-sm text-gray-600">
-                            <Phone className="w-4 h-4" />
+                          <div className="flex flex-col items-end space-y-2">
+                            <Badge variant={appointment.status} size="sm" />
+                            <div className="flex items-center space-x-1">
+                              {appointment.status === 'pending' && (
+                                <button
+                                  onClick={() => handleStatusUpdate(appointment._id, 'confirmed')}
+                                  className="p-1.5 bg-emerald-100 text-emerald-700 rounded-lg hover:bg-emerald-200 transition-colors"
+                                  title="Confirm Appointment"
+                                >
+                                  <CheckCircle className="w-3 h-3 sm:w-4 sm:h-4" />
+                                </button>
+                              )}
+                              {appointment.status === 'confirmed' && (
+                                <button
+                                  onClick={() => handleStatusUpdate(appointment._id, 'completed')}
+                                  className="p-1.5 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors"
+                                  title="Mark Complete"
+                                >
+                                  <Check className="w-3 h-3 sm:w-4 sm:h-4" />
+                                </button>
+                              )}
+                              <button
+                                onClick={() => setSelectedAppointment(appointment)}
+                                className="p-1.5 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+                                title="View Details"
+                              >
+                                <Eye className="w-3 h-3 sm:w-4 sm:h-4" />
+                              </button>
+                              <button
+                                onClick={() => handleDelete(appointment._id)}
+                                className="p-1.5 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors"
+                                title="Delete Appointment"
+                              >
+                                <Trash2 className="w-3 h-3 sm:w-4 sm:h-4" />
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        {/* Contact and Service Info */}
+                        <div className="space-y-2">
+                          <div className="flex items-center space-x-2 text-sm text-gray-600">
+                            <Phone className="w-4 h-4 flex-shrink-0" />
                             <span>{appointment.phone}</span>
                           </div>
-                        </div>
-                        
-                        {/* Service & Date */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                          <div className="flex items-center space-x-2">
-                            <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
-                              <CalendarDays className="w-4 h-4 text-blue-600" />
-                            </div>
-                            <div>
-                              <p className="text-sm font-medium text-gray-900">Service</p>
-                              <p className="text-lg font-semibold text-gray-900">{appointment.service}</p>
-                            </div>
+                          <div className="flex items-center space-x-2 text-sm text-gray-600">
+                            <CalendarDays className="w-4 h-4 flex-shrink-0" />
+                            <span>{appointment.service}</span>
                           </div>
-                          <div className="flex items-center space-x-2">
-                            <Clock className="w-4 h-4 text-gray-400" />
-                            <div>
-                              <p className="text-sm font-medium text-gray-900">Date & Time</p>
-                              <p className="text-lg font-semibold text-gray-900">{appointment.date}</p>
-                              <p className="text-sm text-gray-600">{appointment.time}</p>
-                            </div>
+                          <div className="flex items-center space-x-2 text-sm text-gray-600">
+                            <Clock className="w-4 h-4 flex-shrink-0" />
+                            <span>{appointment.date} at {appointment.time}</span>
                           </div>
-                        </div>
-                        
-                        {/* Status Badge */}
-                        <div className="flex items-center space-x-3 mt-4">
-                          <Badge variant={appointment.status} size="lg" />
                           <div className="flex items-center space-x-2 text-sm text-gray-500">
-                            <MapPin className="w-4 h-4" />
+                            <MapPin className="w-4 h-4 flex-shrink-0" />
                             <span>{appointment.location || 'Main Clinic'}</span>
                           </div>
                         </div>
                       </div>
-                      
-                      {/* Actions */}
-                      <div className="flex items-center space-x-2 ml-4">
-                        {appointment.status === 'pending' && (
+                    </div>
+                    
+                    {/* Desktop Layout */}
+                    <div className="hidden lg:block">
+                      <div className="flex items-start justify-between">
+                        <div className="flex items-start space-x-4 flex-1">
+                          {/* Priority Indicator */}
+                          <div className={`
+                            w-3 h-3 rounded-full
+                            ${getPriorityColor(appointment.priority)}
+                          `}>
+                          </div>
+                          
+                          {/* Patient Info */}
+                          <div className="flex-1">
+                            <div className="flex items-center space-x-3 mb-3">
+                              <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-violet-600 rounded-full flex items-center justify-center text-white font-medium shadow-sm">
+                                {appointment.patientName?.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)}
+                              </div>
+                              <div>
+                                <h3 className="text-lg font-semibold text-gray-900">{appointment.patientName}</h3>
+                                <div className="flex items-center space-x-2 text-sm text-gray-500">
+                                  <Mail className="w-4 h-4" />
+                                  <span>{appointment.email}</span>
+                                </div>
+                              </div>
+                            </div>
+                            
+                            {/* Contact Info */}
+                            <div className="flex items-center space-x-4 text-sm text-gray-600">
+                              <Phone className="w-4 h-4" />
+                              <span>{appointment.phone}</span>
+                            </div>
+                          </div>
+                          
+                          {/* Service & Date */}
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                            <div className="flex items-center space-x-2">
+                              <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                                <CalendarDays className="w-4 h-4 text-blue-600" />
+                              </div>
+                              <div>
+                                <p className="text-sm font-medium text-gray-900">Service</p>
+                                <p className="text-lg font-semibold text-gray-900">{appointment.service}</p>
+                              </div>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <Clock className="w-4 h-4 text-gray-400" />
+                              <div>
+                                <p className="text-sm font-medium text-gray-900">Date & Time</p>
+                                <p className="text-lg font-semibold text-gray-900">{appointment.date}</p>
+                                <p className="text-sm text-gray-600">{appointment.time}</p>
+                              </div>
+                            </div>
+                          </div>
+                          
+                          {/* Status Badge */}
+                          <div className="flex items-center space-x-3 mt-4">
+                            <Badge variant={appointment.status} size="lg" />
+                            <div className="flex items-center space-x-2 text-sm text-gray-500">
+                              <MapPin className="w-4 h-4" />
+                              <span>{appointment.location || 'Main Clinic'}</span>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        {/* Actions */}
+                        <div className="flex items-center space-x-2 ml-4">
+                          {appointment.status === 'pending' && (
+                            <button
+                              onClick={() => handleStatusUpdate(appointment._id, 'confirmed')}
+                              className="p-2 bg-emerald-100 text-emerald-700 rounded-lg hover:bg-emerald-200 transition-colors"
+                              title="Confirm Appointment"
+                            >
+                              <CheckCircle className="w-4 h-4" />
+                            </button>
+                          )}
+                          {appointment.status === 'confirmed' && (
+                            <button
+                              onClick={() => handleStatusUpdate(appointment._id, 'completed')}
+                              className="p-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors"
+                              title="Mark Complete"
+                            >
+                              <Check className="w-4 h-4" />
+                            </button>
+                          )}
                           <button
-                            onClick={() => handleStatusUpdate(appointment._id, 'confirmed')}
-                            className="p-2 bg-emerald-100 text-emerald-700 rounded-lg hover:bg-emerald-200 transition-colors"
-                            title="Confirm Appointment"
+                            onClick={() => setSelectedAppointment(appointment)}
+                            className="p-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+                            title="View Details"
                           >
-                            <CheckCircle className="w-4 h-4" />
+                            <Eye className="w-4 h-4" />
                           </button>
-                        )}
-                        {appointment.status === 'confirmed' && (
                           <button
-                            onClick={() => handleStatusUpdate(appointment._id, 'completed')}
-                            className="p-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors"
-                            title="Mark Complete"
+                            onClick={() => handleDelete(appointment._id)}
+                            className="p-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors"
+                            title="Delete Appointment"
                           >
-                            <Check className="w-4 h-4" />
+                            <Trash2 className="w-4 h-4" />
                           </button>
-                        )}
-                        <button
-                          onClick={() => setSelectedAppointment(appointment)}
-                          className="p-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
-                          title="View Details"
-                        >
-                          <Eye className="w-4 h-4" />
-                        </button>
-                        <button
-                          onClick={() => handleDelete(appointment._id)}
-                          className="p-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors"
-                          title="Delete Appointment"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -1015,7 +1100,7 @@ const Appointments = () => {
     {/* Create Appointment Modal */}
     {showCreateModal && (
       <div className="fixed inset-0 z-50 overflow-y-auto">
-        <div className="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+        <div className="flex items-center justify-center min-h-screen px-2 sm:px-4 pt-4 pb-20 text-center sm:block sm:p-0">
           {/* Background overlay */}
           <div 
             className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
@@ -1023,32 +1108,32 @@ const Appointments = () => {
           />
 
           {/* Modal panel */}
-          <div className="inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full">
+          <div className="inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full w-full max-w-lg">
             <form onSubmit={handleSubmit}>
-              <div className="bg-white px-6 pt-5 pb-4 sm:p-6 sm:pb-4">
-                <div className="flex items-center justify-between mb-6">
-                  <h3 className="text-2xl font-bold text-gray-900 flex items-center">
-                    <SafeCalendarPlus className="w-6 h-6 mr-3 text-blue-600" />
-                    Create New Appointment
+              <div className="bg-white px-4 sm:px-6 pt-4 sm:pt-5 pb-4 sm:pb-4">
+                <div className="flex items-center justify-between mb-4 sm:mb-6">
+                  <h3 className="text-lg sm:text-2xl font-bold text-gray-900 flex items-center">
+                    <SafeCalendarPlus className="w-5 h-5 sm:w-6 sm:h-6 mr-2 sm:mr-3 text-blue-600" />
+                    <span className="text-sm sm:text-base">Create New Appointment</span>
                   </h3>
                   <button
                     type="button"
                     onClick={() => setShowCreateModal(false)}
-                    className="text-gray-400 hover:text-gray-600 transition-colors"
+                    className="text-gray-400 hover:text-gray-600 transition-colors p-1"
                   >
-                    <X className="w-6 h-6" />
+                    <X className="w-5 h-5 sm:w-6 sm:h-6" />
                   </button>
                 </div>
 
                 {/* Error Message */}
                 {createError && (
-                  <div className="mb-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
-                    <p className="font-medium">Error:</p>
+                  <div className="mb-4 bg-red-50 border border-red-200 text-red-700 px-3 sm:px-4 py-2 sm:py-3 rounded-lg">
+                    <p className="font-medium text-sm">Error:</p>
                     <p className="text-sm">{createError}</p>
                   </div>
                 )}
 
-                <div className="space-y-6">
+                <div className="space-y-4 sm:space-y-6">
                   {/* Message Selection */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -1062,7 +1147,7 @@ const Appointments = () => {
                         handleMessageSelect(e.target.value);
                       }}
                       disabled={messagesLoading}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
+                      className="w-full px-3 py-2 sm:py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed text-sm"
                     >
                       <option value="">
                         {messagesLoading ? 'Loading messages...' : 
@@ -1085,7 +1170,7 @@ const Appointments = () => {
                   </div>
 
                   {/* Patient Information */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         Patient Name *
@@ -1096,7 +1181,7 @@ const Appointments = () => {
                         value={formData.patientName}
                         onChange={handleInputChange}
                         required
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full px-3 py-2 sm:py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
                         placeholder="Enter patient name"
                       />
                     </div>
@@ -1110,7 +1195,7 @@ const Appointments = () => {
                         value={formData.patientEmail}
                         onChange={handleInputChange}
                         required
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full px-3 py-2 sm:py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
                         placeholder="Enter patient email"
                       />
                     </div>
@@ -1125,7 +1210,7 @@ const Appointments = () => {
                       name="patientPhone"
                       value={formData.patientPhone}
                       onChange={handleInputChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-3 py-2 sm:py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
                       placeholder="Enter patient phone"
                     />
                   </div>
@@ -1142,7 +1227,7 @@ const Appointments = () => {
                         handleInputChange(e);
                         handleServiceSelect(e.target.value);
                       }}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-3 py-2 sm:py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
                     >
                       <option value="">Select a service...</option>
                       {services.map((service) => (
@@ -1154,7 +1239,7 @@ const Appointments = () => {
                   </div>
 
                   {/* Appointment Date and Time */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         Appointment Date *
@@ -1166,7 +1251,7 @@ const Appointments = () => {
                         onChange={handleInputChange}
                         required
                         min={new Date().toISOString().split('T')[0]}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full px-3 py-2 sm:py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
                         title="Select appointment date"
                       />
                       <p className="text-xs text-gray-500 mt-1">Date will be automatically formatted</p>
@@ -1181,7 +1266,7 @@ const Appointments = () => {
                         value={formData.appointmentTime}
                         onChange={handleInputChange}
                         required
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full px-3 py-2 sm:py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
                       />
                     </div>
                   </div>
@@ -1191,7 +1276,7 @@ const Appointments = () => {
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Appointment Mode
                     </label>
-                    <div className="flex space-x-4">
+                    <div className="flex flex-col sm:flex-row sm:space-x-4 space-y-2 sm:space-y-0">
                       <label className="flex items-center">
                         <input
                           type="radio"
@@ -1229,7 +1314,7 @@ const Appointments = () => {
                       value={formData.notes}
                       onChange={handleInputChange}
                       rows={3}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
                       placeholder="Add any notes about the appointment..."
                     />
                   </div>
@@ -1237,11 +1322,11 @@ const Appointments = () => {
               </div>
 
               {/* Modal Actions */}
-              <div className="bg-gray-50 px-6 py-4 sm:px-6 sm:flex sm:flex-row-reverse">
+              <div className="bg-gray-50 px-4 sm:px-6 py-3 sm:py-4 sm:flex sm:flex-row-reverse">
                 <button
                   type="submit"
                   disabled={createLoading}
-                  className="w-full inline-flex justify-center rounded-lg border border-transparent shadow-sm px-6 py-3 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full inline-flex justify-center rounded-lg border border-transparent shadow-sm px-4 sm:px-6 py-2.5 sm:py-3 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed text-sm"
                 >
                   {createLoading ? (
                     <>
@@ -1258,7 +1343,7 @@ const Appointments = () => {
                 <button
                   type="button"
                   onClick={() => setShowCreateModal(false)}
-                  className="mt-3 w-full inline-flex justify-center rounded-lg border border-gray-300 shadow-sm px-6 py-3 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+                  className="mt-3 w-full inline-flex justify-center rounded-lg border border-gray-300 shadow-sm px-4 sm:px-6 py-2.5 sm:py-3 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm text-sm"
                 >
                   Cancel
                 </button>

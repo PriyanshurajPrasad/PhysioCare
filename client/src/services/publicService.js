@@ -32,7 +32,7 @@ const publicService = {
 
   // Contact
   submitContact: async (contactData) => {
-    return await API.post('/api/contact', contactData);
+    return await API.post('/contact', contactData);
   }
 };
 

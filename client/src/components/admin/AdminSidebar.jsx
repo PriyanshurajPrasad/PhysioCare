@@ -93,8 +93,8 @@ const AdminSidebar = ({ isOpen, isCollapsed, onClose, onToggleCollapse }) => {
         {/* Collapse toggle */}
         <button
           onClick={onToggleCollapse}
-          className="p-2 text-gray-400 hover:text-white rounded transition-colors"
-          title={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+          className="hidden lg:flex items-center justify-center w-8 h-8 text-gray-400 hover:text-white transition-colors duration-200 rounded"
+          aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
         >
           {isCollapsed ? (
             <ChevronRight className="w-4 h-4" />
@@ -104,67 +104,72 @@ const AdminSidebar = ({ isOpen, isCollapsed, onClose, onToggleCollapse }) => {
         </button>
       </div>
 
-      {/* Admin Profile */}
-      {!isCollapsed && adminUser && (
-        <div className="p-4 border-b border-gray-700">
-          <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 bg-gray-600 rounded-full flex items-center justify-center">
-              <span className="text-white text-sm font-semibold">
-                {adminUser.name.charAt(0).toUpperCase()}
-              </span>
+      {/* Admin Profile and Navigation Menu */}
+      <div className="flex-1 overflow-y-auto">
+        {/* Admin Profile */}
+        {!isCollapsed && (
+          <div className="flex items-center space-x-3 p-4 border-b border-gray-700">
+            <div className="w-10 h-10 bg-gray-600 rounded-full flex items-center justify-center">
+              <User className="w-5 h-5 text-gray-300" />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-white text-sm font-medium truncate">
-                {adminUser.name}
+              <p className="text-white font-medium text-sm truncate">
+                {adminUser?.name || 'Admin User'}
               </p>
               <p className="text-gray-400 text-xs truncate">
-                {adminUser.email}
+                {adminUser?.email || 'admin@example.com'}
               </p>
             </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Navigation Menu */}
-      <nav className="flex-1 px-2 py-4 space-y-1">
-        {menuItems.map((item, index) => (
-          <Link
-            key={index}
-            to={item.path}
-            onClick={onClose}
-            className={`
-              flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-medium
-              transition-colors duration-200 group
-              ${isActive(item.path)
-                ? 'bg-blue-600 text-white'
-                : 'text-gray-300 hover:bg-gray-700 hover:text-white'
-              }
-            `}
-            title={isCollapsed ? item.title : ''}
-          >
-            <item.icon className="w-5 h-5 flex-shrink-0" />
-            {!isCollapsed && (
-              <div className="flex-1 min-w-0">
-                <p className="truncate">{item.title}</p>
-                {item.description && (
-                  <p className="text-xs text-gray-400 truncate">{item.description}</p>
+        {/* Navigation Menu */}
+        <nav className="p-2 sm:p-4">
+          {menuItems.map((item, index) => {
+            const isActive = location.pathname === item.path;
+            return (
+              <Link
+                key={index}
+                to={item.path}
+                onClick={onClose}
+                className={`
+                  flex items-center space-x-3 px-3 py-2 sm:px-4 sm:py-3 rounded-lg transition-all duration-200 group
+                  ${isActive 
+                    ? 'bg-blue-600 text-white' 
+                    : 'text-gray-300 hover:bg-gray-700 hover:text-white'
+                  }
+                  ${isCollapsed ? 'justify-center lg:justify-start' : 'justify-start'}
+                `}
+              >
+                <item.icon className={`
+                  w-5 h-5 flex-shrink-0
+                  ${isCollapsed ? 'lg:w-5 lg:h-5' : 'w-5 h-5'}
+                `} />
+                {!isCollapsed && (
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium truncate">{item.title}</p>
+                    <p className="text-xs text-gray-400 truncate">{item.description}</p>
+                  </div>
                 )}
-              </div>
-            )}
-          </Link>
-        ))}
-      </nav>
+              </Link>
+            );
+          })}
+        </nav>
+      </div>
 
       {/* Logout Button */}
       <div className="p-4 border-t border-gray-700">
         <button
           onClick={handleLogout}
-          className="w-full flex items-center space-x-3 px-3 py-2 text-sm font-medium
-                   text-gray-300 hover:bg-red-600 hover:text-white rounded-lg
-                   transition-colors duration-200"
+          className={`
+            w-full flex items-center justify-center space-x-2 px-3 py-3 rounded-lg
+            bg-red-600 text-white font-medium text-sm
+            hover:bg-red-700 transition-colors duration-200
+            ${isCollapsed ? 'lg:justify-center' : 'justify-center'}
+          `}
         >
-          <LogOut className="w-5 h-5" />
-          {!isCollapsed && <span>Logout</span>}
+          <LogOut className="w-4 h-4" />
+          {!isCollapsed && <span className="text-sm">Logout</span>}
         </button>
       </div>
     </div>

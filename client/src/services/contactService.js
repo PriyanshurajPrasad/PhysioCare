@@ -3,7 +3,7 @@ import API from './api';
 const contactService = {
   createContact: async (payload) => {
     try {
-      const response = await API.post('/api/contact', payload);
+      const response = await API.post('/contact', payload);
       return {
         success: true,
         data: response.data
