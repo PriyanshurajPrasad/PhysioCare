@@ -11,7 +11,7 @@ const adminAuthAPI = axios.create({
 // Request interceptor to add admin auth token
 adminAuthAPI.interceptors.request.use(
   (config) => {
-    const adminToken = localStorage.getItem('adminToken');
+    const adminToken = localStorage.getItem('admin_token');
     if (adminToken) {
       config.headers.Authorization = `Bearer ${adminToken}`;
     }
@@ -28,8 +28,8 @@ adminAuthAPI.interceptors.response.use(
   (error) => {
     // Handle 401 unauthorized - clear admin token and redirect to login
     if (error.response?.status === 401) {
-      localStorage.removeItem('adminToken');
-      localStorage.removeItem('adminUser');
+      localStorage.removeItem('admin_token');
+      localStorage.removeItem('admin_user');
       window.location.href = '/admin';
     }
     return Promise.reject(error);
@@ -67,25 +67,25 @@ export const adminAuthService = {
 export const tokenManager = {
   // Save admin token and user data to localStorage
   saveAuthData: (token, user) => {
-    localStorage.setItem('adminToken', token);
-    localStorage.setItem('adminUser', JSON.stringify(user));
+    localStorage.setItem('admin_token', token);
+    localStorage.setItem('admin_user', JSON.stringify(user));
   },
 
   // Get admin token from localStorage
   getToken: () => {
-    return localStorage.getItem('adminToken');
+    return localStorage.getItem('admin_token');
   },
 
   // Get admin user data from localStorage
   getUser: () => {
-    const userStr = localStorage.getItem('adminUser');
+    const userStr = localStorage.getItem('admin_user');
     return userStr ? JSON.parse(userStr) : null;
   },
 
   // Clear admin auth data from localStorage
   clearAuthData: () => {
-    localStorage.removeItem('adminToken');
-    localStorage.removeItem('adminUser');
+    localStorage.removeItem('admin_token');
+    localStorage.removeItem('admin_user');
   },
 
   // Check if admin user is authenticated
