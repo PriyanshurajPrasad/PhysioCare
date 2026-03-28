@@ -72,14 +72,42 @@ const Contact = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     e.stopPropagation();
+    
+    console.log('🚀 Contact Form Submit Started');
+    console.log('📝 Form Data:', formData);
+    console.log('🔗 Contact Service:', contactService);
+    
+    // Validate required fields
+    const requiredFields = ['name', 'email', 'subject', 'message'];
+    const missingFields = requiredFields.filter(field => !formData[field] || formData[field].trim() === '');
+    
+    if (missingFields.length > 0) {
+      console.log('❌ Validation failed - missing fields:', missingFields);
+      setError(`Please fill in all required fields: ${missingFields.join(', ')}`);
+      return;
+    }
+    
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      console.log('❌ Validation failed - invalid email:', formData.email);
+      setError('Please enter a valid email address');
+      return;
+    }
+    
+    console.log('✅ Form validation passed');
+    
     setLoading(true);
     setError('');
     setSuccess('');
 
     try {
+      console.log('📡 Calling contactService.createContact...');
       const response = await contactService.createContact(formData);
+      console.log('✅ Contact Service Response:', response);
       
       if (response.success) {
+        console.log('🎉 Form submission successful');
         setSuccess('Message sent successfully! We will get back to you soon.');
         setFormData({
           name: '',
@@ -90,12 +118,37 @@ const Contact = () => {
           priority: 'medium'
         });
       } else {
-        setError(response.error || 'Failed to send message. Please try again.');
+        console.log('❌ Form submission failed:', response);
+        // Show more detailed error information
+        let errorMessage = response.error || 'Failed to send message. Please try again.';
+        
+        if (response.status === 404) {
+          errorMessage = 'Service not found. Please contact support.';
+        } else if (response.status === 500) {
+          errorMessage = 'Server error. Please try again later.';
+        } else if (response.status === 400) {
+          errorMessage = 'Invalid form data. Please check your inputs.';
+        }
+        
+        // Add validation errors if present
+        if (response.errors && response.errors.length > 0) {
+          errorMessage += ' ' + response.errors.map(err => err.msg || err.message).join(', ');
+        }
+        
+        setError(errorMessage);
       }
     } catch (err) {
-      setError(err.error || err.customMessage || 'Failed to send message. Please try again.');
+      console.log('💥 Unexpected error in form submission:', err);
+      console.log('Error details:', {
+        message: err.message,
+        customMessage: err.customMessage,
+        response: err.response,
+        request: err.request
+      });
+      setError(err.error || err.customMessage || err.message || 'Failed to send message. Please try again.');
     } finally {
       setLoading(false);
+      console.log('🏁 Contact Form Submit Ended');
     }
   };
 

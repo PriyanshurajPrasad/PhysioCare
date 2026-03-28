@@ -1,8 +1,28 @@
 import axios from 'axios';
 
 // Create axios instance with environment-based baseURL
+const getBaseURL = () => {
+  // Check if we're in production and have a specific backend URL
+  if (import.meta.env.PROD && import.meta.env.VITE_API_BASE_URL) {
+    console.log('🌐 Production API URL:', import.meta.env.VITE_API_BASE_URL);
+    return import.meta.env.VITE_API_BASE_URL;
+  }
+  
+  // Check if we're in production but no explicit URL is set
+  if (import.meta.env.PROD) {
+    // For Vercel deployment, use the production backend URL
+    const prodURL = 'https://physiotherapy-backend.onrender.com/api';
+    console.log('🌐 Using default production API URL:', prodURL);
+    return prodURL;
+  }
+  
+  // Development fallback
+  console.log('🔧 Using development API URL: /api');
+  return '/api';
+};
+
 const API = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || "/api", // Use env var or fallback to proxy
+  baseURL: getBaseURL(),
   timeout: 10000,
   withCredentials: false,
   headers: { 'Content-Type': 'application/json' }
