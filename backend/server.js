@@ -49,6 +49,29 @@ const corsOptions = {
 // Middleware
 app.use(cors(corsOptions));
 
+// Response time middleware
+app.use((req, res, next) => {
+  const start = Date.now();
+  
+  res.on('finish', () => {
+    const duration = Date.now() - start;
+    res.setHeader('X-Response-Time', `${duration}ms`);
+    
+    // Log slow requests
+    if (duration > 5000) { // Log requests taking more than 5 seconds
+      console.log('🐌 Slow request detected:', {
+        method: req.method,
+        url: req.originalUrl,
+        duration: `${duration}ms`,
+        userAgent: req.get('User-Agent'),
+        ip: req.ip
+      });
+    }
+  });
+  
+  next();
+});
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
@@ -66,11 +89,57 @@ app.use('/api', reviewRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
-  res.status(200).json({ 
+  const healthCheck = {
     status: 'OK', 
     message: 'Backend server is running',
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV || 'development',
+    port: process.env.PORT || 4500,
+    database: 'connected', // This would be more sophisticated in production
+    memory: process.memoryUsage(),
+    uptime: process.uptime(),
+    version: process.env.npm_package_version || '1.0.0',
+    routes: {
+      adminAuth: '/api/admin/auth/*',
+      admin: '/api/admin/*',
+      public: '/api/*',
+      health: '/api/health'
+    }
+  };
+  
+  console.log('🏥 Health check accessed:', {
+    ip: req.ip,
+    userAgent: req.get('User-Agent'),
+    timestamp: healthCheck.timestamp
   });
+  
+  res.status(200).json(healthCheck);
+});
+
+// Debug endpoint for admin auth
+app.get('/api/debug/admin-auth', (req, res) => {
+  const debugInfo = {
+    message: 'Admin auth debug endpoint',
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV,
+    backendURL: process.env.NODE_ENV === 'production' ? 
+      'https://physiocare-backend-ov2z.onrender.com' : 
+      'http://localhost:4500',
+    headers: req.headers,
+    routes: {
+      login: 'POST /api/admin/auth/login',
+      register: 'POST /api/admin/auth/register',
+      profile: 'GET /api/admin/auth/me'
+    },
+    cors: {
+      origin: req.get('Origin'),
+      allowedOrigins: ['http://localhost:5173', 'https://*.vercel.app'],
+      credentials: true
+    }
+  };
+  
+  console.log('🔍 Admin auth debug accessed:', debugInfo);
+  res.status(200).json(debugInfo);
 });
 
 // Error handling middleware (must be last)

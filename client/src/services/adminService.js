@@ -1,9 +1,49 @@
-import API from './api';
+import API, { retryRequest } from './api';
 
 const adminService = {
   // Authentication
   loginAdmin: async (credentials) => {
-    return await API.post('/api/admin/auth/login', credentials);
+    console.log('🔐 Admin login attempt:', { email: credentials.email, hasPassword: !!credentials.password });
+    
+    try {
+      const response = await retryRequest(
+        () => API.post('/api/admin/auth/login', credentials),
+        3, // max 3 retries
+        1000 // 1 second initial delay
+      );
+      
+      console.log('✅ Admin login successful:', {
+        status: response.status,
+        hasToken: !!response.data?.token,
+        adminId: response.data?.admin?.id
+      });
+      
+      return response;
+    } catch (error) {
+      console.error('❌ Admin login failed:', {
+        status: error.response?.status,
+        message: error.message,
+        customMessage: error.customMessage,
+        code: error.code,
+        baseURL: error.config?.baseURL,
+        url: error.config?.url
+      });
+      
+      // Add specific error handling for different scenarios
+      if (error.code === 'ECONNABORTED' || error.message.includes('timeout')) {
+        error.customMessage = 'Login request timed out. This is likely due to server cold start. Please try again in a few seconds.';
+      } else if (error.response?.status === 401) {
+        error.customMessage = 'Invalid email or password. Please check your credentials.';
+      } else if (error.response?.status === 404) {
+        error.customMessage = 'Admin account not found. Please check your email or contact support.';
+      } else if (error.response?.status === 500) {
+        error.customMessage = 'Server error occurred. Please try again later.';
+      } else if (!error.response) {
+        error.customMessage = 'Unable to connect to server. Please check your internet connection and try again.';
+      }
+      
+      throw error;
+    }
   },
 
   registerAdmin: async (adminData) => {

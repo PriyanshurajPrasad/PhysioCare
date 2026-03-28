@@ -60,7 +60,17 @@ const AdminLogin = () => {
       }
     } catch (err) {
       console.error('❌ Login error:', err.response?.data?.message || err.message || 'Login failed. Please try again.');
-      setError(err.response?.data?.message || err.message || 'Login failed. Please try again.');
+      
+      // Use custom error message if available, otherwise fall back to default
+      let errorMessage = err.customMessage || err.response?.data?.message || err.message || 'Login failed. Please try again.';
+      
+      // Add specific handling for timeout errors
+      if (err.code === 'ECONNABORTED' || err.message.includes('timeout')) {
+        errorMessage = 'Login request timed out. This is likely due to server cold start. Please try again in a few seconds.';
+      }
+      
+      console.log('📝 Final error message to display:', errorMessage);
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
