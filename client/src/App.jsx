@@ -19,6 +19,7 @@ import Contact from './pages/public/Contact';
 
 // Admin pages
 import AdminLogin from './pages/admin/AdminLogin';
+import AdminRegisterAccessDenied from './pages/admin/AdminRegisterAccessDenied';
 import Dashboard from './pages/admin/Dashboard';
 import Appointments from './pages/admin/Appointments';
 import Messages from './pages/admin/Messages';
@@ -68,6 +69,7 @@ function App() {
 
           {/* Admin Auth Routes (standalone, no layout) */}
           <Route path="/admin/login" element={<AdminLogin />} />
+          <Route path="/admin/register" element={<AdminRegisterAccessDenied />} />
 
           {/* Admin Routes - redirect /admin to /admin/login */}
           <Route path="/admin" element={<Navigate to="/admin/login" replace />} />
