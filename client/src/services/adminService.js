@@ -3,25 +3,25 @@ import API from './api';
 const adminService = {
   // Authentication
   loginAdmin: async (credentials) => {
-    return await API.post('/admin/auth/login', credentials);
+    return await API.post('/api/admin/auth/login', credentials);
   },
 
   registerAdmin: async (adminData) => {
-    return await API.post('/admin/auth/register', adminData);
+    return await API.post('/api/admin/auth/register', adminData);
   },
 
   getAdminProfile: async () => {
-    return await API.get('/admin/auth/me');
+    return await API.get('/api/admin/auth/me');
   },
 
   // Dashboard
   getDashboardStats: async () => {
-    return await API.get('/admin/dashboard/stats');
+    return await API.get('/api/admin/dashboard/stats');
   },
 
   // SSE for real-time updates
   connectSSE: () => {
-    const eventSource = new EventSource(`${API.defaults.baseURL}/admin/events`, {
+    const eventSource = new EventSource(`${API.defaults.baseURL}/api/admin/events`, {
       withCredentials: true
     });
 
@@ -50,110 +50,110 @@ const adminService = {
   // Messages
   getMessages: async (params = {}) => {
     const queryString = new URLSearchParams(params).toString();
-    const response = await API.get(`/admin/messages?${queryString}`);
+    const response = await API.get(`/api/admin/messages?${queryString}`);
     console.log('🔍 API Response:', response);
     return response;
   },
 
   getMessageOptions: async () => {
-    const response = await API.get('/admin/messages/options');
+    const response = await API.get('/api/admin/messages/options');
     console.log('🔍 Message Options API Response:', response);
     return response;
   },
 
   getMessageById: async (id) => {
-    return await API.get(`/admin/messages/${id}`);
+    return await API.get(`/api/admin/messages/${id}`);
   },
 
   markMessageAsRead: async (id) => {
-    return await API.patch(`/admin/messages/${id}/read`);
+    return await API.patch(`/api/admin/messages/${id}/read`);
   },
 
   resolveMessage: async (id) => {
-    return await API.patch(`/admin/messages/${id}/resolve`);
+    return await API.patch(`/api/admin/messages/${id}/resolve`);
   },
 
   deleteMessage: async (id) => {
-    return await API.delete(`/admin/messages/${id}`);
+    return await API.delete(`/api/admin/messages/${id}`);
   },
 
   replyToMessage: async (id, replyData) => {
-    return await API.post(`/admin/messages/${id}/reply`, replyData);
+    return await API.post(`/api/admin/messages/${id}/reply`, replyData);
   },
 
   // Appointments
   getAppointments: async (params = {}) => {
     const queryString = new URLSearchParams(params).toString();
-    return await API.get(`/admin/appointments?${queryString}`);
+    return await API.get(`/api/admin/appointments?${queryString}`);
   },
 
   createAppointment: async (appointmentData) => {
-    return await API.post('/admin/appointments', appointmentData);
+    return await API.post('/api/admin/appointments', appointmentData);
   },
 
   updateAppointment: async (id, data) => {
-    return await API.patch(`/admin/appointments/${id}`, data);
+    return await API.patch(`/api/admin/appointments/${id}`, data);
   },
 
   getAppointmentById: async (id) => {
-    return await API.get(`/admin/appointments/${id}`);
+    return await API.get(`/api/admin/appointments/${id}`);
   },
 
   deleteAppointment: async (id) => {
-    return await API.delete(`/admin/appointments/${id}`);
+    return await API.delete(`/api/admin/appointments/${id}`);
   },
 
   // Services
   getServices: async () => {
-    return await API.get('/admin/services');
+    return await API.get('/api/admin/services');
   },
 
   getServiceById: async (id) => {
-    return await API.get(`/admin/services/${id}`);
+    return await API.get(`/api/admin/services/${id}`);
   },
 
   createService: async (serviceData) => {
-    return await API.post('/admin/services', serviceData);
+    return await API.post('/api/admin/services', serviceData);
   },
 
   updateService: async (id, serviceData) => {
-    return await API.patch(`/admin/services/${id}`, serviceData);
+    return await API.patch(`/api/admin/services/${id}`, serviceData);
   },
 
   deleteService: async (id) => {
-    return await API.delete(`/admin/services/${id}`);
+    return await API.delete(`/api/admin/services/${id}`);
   },
 
   // Testimonials
   getTestimonials: async (params = {}) => {
     const queryString = new URLSearchParams(params).toString();
-    return await API.get(`/admin/testimonials?${queryString}`);
+    return await API.get(`/api/admin/testimonials?${queryString}`);
   },
 
   approveTestimonial: async (testimonialId) => {
-    return await API.post('/admin/testimonials/approve', { testimonialId });
+    return await API.post('/api/admin/testimonials/approve', { testimonialId });
   },
 
   deleteTestimonial: async (id) => {
-    return await API.delete(`/admin/testimonials/${id}`);
+    return await API.delete(`/api/admin/testimonials/${id}`);
   },
 
   // About
   getAbout: async () => {
-    return await API.get('/admin/about');
+    return await API.get('/api/admin/about');
   },
 
   updateAbout: async (aboutData) => {
-    return await API.put('/admin/about', aboutData);
+    return await API.put('/api/admin/about', aboutData);
   },
 
   // Profile
   updateAdminProfile: async (profileData) => {
-    return await API.put('/admin/auth/profile', profileData);
+    return await API.put('/api/admin/auth/profile', profileData);
   },
 
   updateAdminPassword: async (passwordData) => {
-    return await API.put('/admin/auth/password', passwordData);
+    return await API.put('/api/admin/auth/password', passwordData);
   }
 };
 
