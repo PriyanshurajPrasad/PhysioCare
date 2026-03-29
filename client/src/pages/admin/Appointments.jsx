@@ -86,7 +86,9 @@ const Appointments = () => {
       setAppointments(response.data?.appointments || []);
       setError(''); // Clear any previous errors
     } catch (error) {
-      console.error('Failed to fetch appointments:', error);
+      if (import.meta.env.DEV) {
+        console.error('Failed to fetch appointments:', error);
+      }
       setError('Failed to fetch appointments');
     } finally {
       setLoading(false);
@@ -97,7 +99,10 @@ const Appointments = () => {
     try {
       setMessagesLoading(true);
       setMessagesError('');
-      console.log('🔍 Fetching message options for dropdown...');
+      
+      if (import.meta.env.DEV) {
+        console.log('🔍 Fetching message options for dropdown...');
+      }
       
       let response;
       let messagesArray = [];
@@ -105,22 +110,30 @@ const Appointments = () => {
       try {
         // Try the lightweight options endpoint first
         response = await adminService.getMessageOptions();
-        console.log('📥 Using lightweight options endpoint');
+        if (import.meta.env.DEV) {
+          console.log('📥 Using lightweight options endpoint');
+        }
       } catch (optionsError) {
-        console.warn('⚠️ Options endpoint failed, falling back to full messages endpoint:', optionsError.message);
+        if (import.meta.env.DEV) {
+          console.warn('⚠️ Options endpoint failed, falling back to full messages endpoint:', optionsError.message);
+        }
         // Fallback to the full messages endpoint
         response = await adminService.getMessages({ status: 'all', limit: 100 });
-        console.log('📥 Using fallback full messages endpoint');
+        if (import.meta.env.DEV) {
+          console.log('📥 Using fallback full messages endpoint');
+        }
       }
       
-      console.log('📥 Raw API Response:', response);
-      console.log('📊 Response data structure:', {
-        hasData: !!response.data,
-        hasDataMessages: !!response.data?.messages,
-        messagesType: typeof response.data?.messages,
-        messagesLength: response.data?.messages?.length,
-        messagesArray: Array.isArray(response.data?.messages)
-      });
+      if (import.meta.env.DEV) {
+        console.log('📥 Raw API Response received');
+        console.log('📊 Response data structure:', {
+          hasData: !!response.data,
+          hasDataMessages: !!response.data?.messages,
+          messagesType: typeof response.data?.messages,
+          messagesLength: response.data?.messages?.length,
+          messagesArray: Array.isArray(response.data?.messages)
+        });
+      }
       
       // Extract messages safely with multiple fallback paths
       if (response.data?.messages && Array.isArray(response.data.messages)) {
@@ -132,35 +145,34 @@ const Appointments = () => {
       } else if (Array.isArray(response.data)) {
         messagesArray = response.data;
       } else {
-        console.warn('⚠️ Unexpected response structure:', response);
+        if (import.meta.env.DEV) {
+          console.warn('⚠️ Unexpected response structure');
+        }
       }
       
-      console.log('✅ Extracted messages:', {
-        count: messagesArray.length,
-        firstMessage: messagesArray[0] ? {
-          id: messagesArray[0]._id,
-          name: messagesArray[0].name,
-          email: messagesArray[0].email,
-          phone: messagesArray[0].phone
-        } : null
-      });
+      if (import.meta.env.DEV) {
+        console.log('✅ Extracted messages:', {
+          count: messagesArray.length,
+          firstMessage: messagesArray[0] ? {
+            id: messagesArray[0]._id,
+            name: '[REDACTED]',
+            email: '[REDACTED]',
+            phone: '[REDACTED]'
+          } : null
+        });
+      }
       
       setMessages(messagesArray);
       
     } catch (error) {
-      console.error('❌ Failed to fetch message options:', error);
-      console.error('❌ Error details:', {
-        message: error.message,
-        status: error.response?.status,
-        statusText: error.response?.statusText,
-        data: error.response?.data,
-        config: {
-          url: error.config?.url,
-          method: error.config?.method,
-          baseURL: error.config?.baseURL,
-          headers: error.config?.headers
-        }
-      });
+      if (import.meta.env.DEV) {
+        console.error('❌ Failed to fetch message options:', error);
+        console.error('❌ Error details:', {
+          message: error.message,
+          status: error.response?.status,
+          statusText: error.response?.statusText
+        });
+      }
       
       // More specific error messages based on status code
       let errorMessage = 'Failed to load messages';
@@ -188,7 +200,9 @@ const Appointments = () => {
       const response = await adminService.getServices();
       setServices(response.data?.services || []);
     } catch (error) {
-      console.error('Failed to fetch services:', error);
+      if (import.meta.env.DEV) {
+        console.error('Failed to fetch services:', error);
+      }
     }
   };
 
@@ -231,8 +245,9 @@ const Appointments = () => {
     setSuccessMessage('');
 
     try {
-      // Log payload for debugging
-      console.log('📋 Form data before cleaning:', formData);
+      if (import.meta.env.DEV) {
+        console.log('📋 Appointment creation started');
+      }
       
       // Clean payload to not send empty strings for optional IDs
       const cleanedPayload = { ...formData };
@@ -243,10 +258,16 @@ const Appointments = () => {
         delete cleanedPayload.serviceId;
       }
       
-      console.log('📋 Cleaned payload to send:', cleanedPayload);
+      if (import.meta.env.DEV) {
+        console.log('📋 Payload prepared for API call');
+        console.log('📋 Payload fields:', Object.keys(cleanedPayload));
+      }
       
       const response = await adminService.createAppointment(cleanedPayload);
-      console.log('✅ Appointment created:', response.data);
+      
+      if (import.meta.env.DEV) {
+        console.log('✅ Appointment created successfully');
+      }
       
       // Handle email status in success message
       let successMsg = response.data.message || 'Appointment created successfully';
@@ -270,7 +291,9 @@ const Appointments = () => {
       try {
         await fetchAppointments();
       } catch (refetchError) {
-        console.error('Failed to refresh appointments after creation:', refetchError);
+        if (import.meta.env.DEV) {
+          console.error('Failed to refresh appointments after creation:', refetchError);
+        }
         // Don't show error to user, just log it
       }
       
@@ -280,15 +303,14 @@ const Appointments = () => {
       }, 5000);
       
     } catch (error) {
-      console.error('❌ Create appointment error:', error);
-      console.error('❌ Full error details:', {
-        message: error.message,
-        response: error.response ? {
-          status: error.response.status,
-          data: error.response.data
-        } : 'No response',
-        config: error.config
-      });
+      if (import.meta.env.DEV) {
+        console.error('❌ Create appointment error:', error);
+        console.error('❌ Error details:', {
+          message: error.message,
+          status: error.response?.status,
+          data: error.response?.data ? '[REDACTED]' : 'No response'
+        });
+      }
       
       // Handle different error types
       let errorMessage = 'Failed to create appointment';
@@ -318,7 +340,9 @@ const Appointments = () => {
       }
       
       setCreateError(errorMessage);
-      console.log('📱 Setting error message:', errorMessage);
+      if (import.meta.env.DEV) {
+        console.log('📱 Setting error message:', errorMessage);
+      }
     } finally {
       setCreateLoading(false);
     }

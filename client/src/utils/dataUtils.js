@@ -22,7 +22,9 @@ export const extractArray = (response, arrayPath = 'data') => {
     try {
       const result = path ? getNestedValue(response, path) : response;
       if (Array.isArray(result)) {
-        console.log(`✅ Array found at path: ${path}`, result);
+        if (import.meta.env.DEV) {
+          console.log(`✅ Array found at path: ${path}`, result.length > 0 ? `[${result.length} items]` : '[]');
+        }
         return result;
       }
     } catch (error) {
@@ -30,7 +32,9 @@ export const extractArray = (response, arrayPath = 'data') => {
     }
   }
 
-  console.warn('⚠️ No array found in response, returning empty array');
+  if (import.meta.env.DEV) {
+    console.warn('⚠️ No array found in response, returning empty array');
+  }
   return [];
 };
 
@@ -51,15 +55,19 @@ export const getNestedValue = (obj, path) => {
  * @returns {Array} - Normalized array
  */
 export const normalizeResponseData = (response, dataType) => {
-  console.log(`🔍 Normalizing ${dataType} response:`, response);
+  if (import.meta.env.DEV) {
+    console.log(`🔍 Normalizing ${dataType} response`);
+  }
   
   const array = extractArray(response, dataType);
   
-  console.log(`📋 Normalized ${dataType}:`, {
-    isArray: Array.isArray(array),
-    length: array.length,
-    sample: array.slice(0, 2)
-  });
+  if (import.meta.env.DEV) {
+    console.log(`📋 Normalized ${dataType}:`, {
+      isArray: Array.isArray(array),
+      length: array.length,
+      sample: array.length > 0 ? `[${array.slice(0, 2).length} items]` : '[]'
+    });
+  }
   
   return array;
 };
