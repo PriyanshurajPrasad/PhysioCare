@@ -3,7 +3,7 @@ import API, { retryRequest } from './api';
 const adminService = {
   // Authentication
   loginAdmin: async (credentials) => {
-    console.log('🔐 Admin login attempt:', { email: credentials.email, hasPassword: !!credentials.password });
+    console.log('🔐 Admin login attempt');
     
     try {
       const response = await retryRequest(
@@ -14,8 +14,7 @@ const adminService = {
       
       console.log('✅ Admin login successful:', {
         status: response.status,
-        hasToken: !!response.data?.token,
-        adminId: response.data?.admin?.id
+        hasToken: !!response.data?.token
       });
       
       return response;

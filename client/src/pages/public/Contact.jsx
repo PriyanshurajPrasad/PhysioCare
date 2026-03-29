@@ -74,15 +74,13 @@ const Contact = () => {
     e.stopPropagation();
     
     console.log('🚀 Contact Form Submit Started');
-    console.log('📝 Form Data:', formData);
-    console.log('🔗 Contact Service:', contactService);
     
     // Validate required fields
     const requiredFields = ['name', 'email', 'subject', 'message'];
     const missingFields = requiredFields.filter(field => !formData[field] || formData[field].trim() === '');
     
     if (missingFields.length > 0) {
-      console.log('❌ Validation failed - missing fields:', missingFields);
+      console.log('❌ Validation failed - missing fields:', missingFields.map(f => f.charAt(0).toUpperCase() + f.slice(1)));
       setError(`Please fill in all required fields: ${missingFields.join(', ')}`);
       return;
     }
@@ -90,7 +88,7 @@ const Contact = () => {
     // Validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(formData.email)) {
-      console.log('❌ Validation failed - invalid email:', formData.email);
+      console.log('❌ Validation failed - invalid email format');
       setError('Please enter a valid email address');
       return;
     }
@@ -102,9 +100,8 @@ const Contact = () => {
     setSuccess('');
 
     try {
-      console.log('📡 Calling contactService.createContact...');
+      console.log('📡 Submitting contact form...');
       const response = await contactService.createContact(formData);
-      console.log('✅ Contact Service Response:', response);
       
       if (response.success) {
         console.log('🎉 Form submission successful');
@@ -118,7 +115,7 @@ const Contact = () => {
           priority: 'medium'
         });
       } else {
-        console.log('❌ Form submission failed:', response);
+        console.log('❌ Form submission failed');
         // Show more detailed error information
         let errorMessage = response.error || 'Failed to send message. Please try again.';
         
@@ -142,14 +139,7 @@ const Contact = () => {
         setError(errorMessage);
       }
     } catch (err) {
-      console.log('💥 Unexpected error in form submission:', err);
-      console.log('Error details:', {
-        message: err.message,
-        customMessage: err.customMessage,
-        response: err.response,
-        request: err.request,
-        config: err.config
-      });
+      console.log('💥 Unexpected error in form submission');
       
       // Handle different error types
       let errorMessage = 'Failed to send message. Please try again.';
@@ -159,7 +149,7 @@ const Contact = () => {
         const status = err.response.status;
         const data = err.response.data;
         
-        console.log('🔴 Server Error Response:', { status, data });
+        console.log('🔴 Server Error Response:', { status });
         
         if (status === 400) {
           errorMessage = data.message || 'Invalid form data. Please check your inputs.';
@@ -182,7 +172,7 @@ const Contact = () => {
         errorMessage = 'Network error. Please check your connection and try again.';
       } else {
         // Other error
-        console.log('⚠️ Other Error Type:', err);
+        console.log('⚠️ Other Error Type');
         errorMessage = err.message || 'An unexpected error occurred';
       }
       

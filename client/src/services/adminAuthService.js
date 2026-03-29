@@ -97,7 +97,6 @@ export const tokenManager = {
     console.log('tokenManager.isAuthenticated check:', {
       hasToken: !!adminToken,
       hasUser: !!adminUser,
-      userRole: adminUser?.role,
       isValid: !!(adminToken && adminUser && adminUser.role === 'admin')
     });
     

@@ -40,9 +40,9 @@ const AdminLogin = () => {
     setError('');
 
     try {
-      console.log('🔐 Attempting admin login with:', formData.email);
+      console.log('🔐 Attempting admin login');
       const response = await adminService.loginAdmin(formData);
-      console.log('✅ Login response:', response.data);
+      console.log('✅ Login response received');
       
       if (response.data?.token) {
         localStorage.setItem('admin_token', response.data.token);
@@ -55,7 +55,7 @@ const AdminLogin = () => {
         
         navigate(safeRedirect, { replace: true });
       } else {
-        console.error('❌ Login failed:', response.data);
+        console.error('❌ Login failed');
         setError(response.data?.message || 'Login failed. Please check your credentials.');
       }
     } catch (err) {

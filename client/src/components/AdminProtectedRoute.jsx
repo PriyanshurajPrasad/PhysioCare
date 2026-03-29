@@ -50,7 +50,7 @@ const AdminProtectedRoute = ({ children }) => {
       return <Navigate to="/admin/login" state={{ from: location }} replace />;
     }
 
-    console.log('✅ Admin authenticated and verified:', adminData.email);
+    console.log('✅ Admin authenticated and verified');
     return children;
     
   } catch (error) {

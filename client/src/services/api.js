@@ -45,7 +45,7 @@ API.interceptors.request.use(
     return config;
   },
   (error) => {
-    console.error('❌ Request interceptor error:', error);
+    console.error('❌ Request interceptor error');
     return Promise.reject(error);
   }
 );
@@ -56,7 +56,6 @@ API.interceptors.response.use(
     console.log('✅ API Response:', {
       status: response.status,
       url: response.config.url,
-      data: response.data,
       responseTime: response.headers['x-response-time']
     });
     return response;
@@ -68,7 +67,6 @@ API.interceptors.response.use(
       baseURL: error.config?.baseURL,
       message: error.message,
       code: error.code,
-      data: error.response?.data,
       timeout: error.config?.timeout
     });
 
