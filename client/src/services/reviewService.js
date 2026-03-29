@@ -12,11 +12,15 @@ const api = axios.create({
 // Request interceptor for debugging
 api.interceptors.request.use(
   (config) => {
-    console.log(`Making ${config.method?.toUpperCase()} request to ${config.url}`);
+    if (import.meta.env.DEV) {
+      console.log(`Making ${config.method?.toUpperCase()} request to ${config.url}`);
+    }
     return config;
   },
   (error) => {
-    console.error('Request error:', error);
+    if (import.meta.env.DEV) {
+      console.error('Request error:', error);
+    }
     return Promise.reject(error);
   }
 );
@@ -27,7 +31,9 @@ api.interceptors.response.use(
     return response;
   },
   (error) => {
-    console.error('Response error:', error);
+    if (import.meta.env.DEV) {
+      console.error('Response error:', error);
+    }
     
     // Handle network errors
     if (!error.response) {
@@ -62,7 +68,9 @@ export const getFeaturedReviews = async (limit = 6) => {
     });
     return response.data;
   } catch (error) {
-    console.error('Error fetching featured reviews:', error);
+    if (import.meta.env.DEV) {
+      console.error('Error fetching featured reviews:', error);
+    }
     throw error;
   }
 };
@@ -98,7 +106,9 @@ export const getReviews = async (options = {}) => {
     const response = await api.get('/reviews', { params });
     return response.data;
   } catch (error) {
-    console.error('Error fetching reviews:', error);
+    if (import.meta.env.DEV) {
+      console.error('Error fetching reviews:', error);
+    }
     throw error;
   }
 };
@@ -117,7 +127,9 @@ export const createReview = async (reviewData) => {
     const response = await api.post('/reviews', reviewData);
     return response.data;
   } catch (error) {
-    console.error('Error creating review:', error);
+    if (import.meta.env.DEV) {
+      console.error('Error creating review:', error);
+    }
     throw error;
   }
 };
@@ -131,7 +143,9 @@ export const getReviewStats = async () => {
     const response = await api.get('/reviews/stats');
     return response.data;
   } catch (error) {
-    console.error('Error fetching review stats:', error);
+    if (import.meta.env.DEV) {
+      console.error('Error fetching review stats:', error);
+    }
     throw error;
   }
 };

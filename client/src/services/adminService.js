@@ -3,7 +3,9 @@ import API, { retryRequest } from './api';
 const adminService = {
   // Authentication
   loginAdmin: async (credentials) => {
-    console.log('🔐 Admin login attempt');
+    if (import.meta.env.DEV) {
+      console.log('🔐 Admin login attempt');
+    }
     
     try {
       const response = await retryRequest(
@@ -12,21 +14,23 @@ const adminService = {
         1000 // 1 second initial delay
       );
       
-      console.log('✅ Admin login successful:', {
-        status: response.status,
-        hasToken: !!response.data?.token
-      });
+      if (import.meta.env.DEV) {
+        console.log('✅ Admin login successful:', {
+          status: response.status,
+          hasToken: !!response.data?.token
+        });
+      }
       
       return response;
     } catch (error) {
-      console.error('❌ Admin login failed:', {
-        status: error.response?.status,
-        message: error.message,
-        customMessage: error.customMessage,
-        code: error.code,
-        baseURL: error.config?.baseURL,
-        url: error.config?.url
-      });
+      if (import.meta.env.DEV) {
+        console.error('❌ Admin login failed:', {
+          status: error.response?.status,
+          message: error.message,
+          customMessage: error.customMessage,
+          code: error.code
+        });
+      }
       
       // Add specific error handling for different scenarios
       if (error.code === 'ECONNABORTED' || error.message.includes('timeout')) {
@@ -65,20 +69,28 @@ const adminService = {
     });
 
     eventSource.onopen = () => {
-      console.log('🔌 SSE connection opened');
+      if (import.meta.env.DEV) {
+        console.log('🔌 SSE connection opened');
+      }
     };
 
     eventSource.onerror = (error) => {
-      console.error('❌ SSE connection error:', error);
+      if (import.meta.env.DEV) {
+        console.error('❌ SSE connection error:', error);
+      }
     };
 
     eventSource.onmessage = (event) => {
       try {
         const data = JSON.parse(event.data);
-        console.log('📨 SSE event received:', data);
+        if (import.meta.env.DEV) {
+          console.log('📨 SSE event received:', data);
+        }
         return data;
       } catch (error) {
-        console.error('❌ Failed to parse SSE data:', error);
+        if (import.meta.env.DEV) {
+          console.error('❌ Failed to parse SSE data:', error);
+        }
         return null;
       }
     };
@@ -90,13 +102,17 @@ const adminService = {
   getMessages: async (params = {}) => {
     const queryString = new URLSearchParams(params).toString();
     const response = await API.get(`/api/admin/messages?${queryString}`);
-    console.log('🔍 API Response:', response);
+    if (import.meta.env.DEV) {
+      console.log('🔍 API Response:', response);
+    }
     return response;
   },
 
   getMessageOptions: async () => {
     const response = await API.get('/api/admin/messages/options');
-    console.log('🔍 Message Options API Response:', response);
+    if (import.meta.env.DEV) {
+      console.log('🔍 Message Options API Response:', response);
+    }
     return response;
   },
 

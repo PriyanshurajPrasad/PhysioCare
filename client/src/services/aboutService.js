@@ -9,10 +9,14 @@ import api from './api';
 export const getAboutContent = async () => {
   try {
     const response = await api.get('/about');
-    console.log('About API Response:', response.data); // Debug log
+    if (import.meta.env.DEV) {
+      console.log('About API Response:', response.data); // Debug log
+    }
     return response.data;
   } catch (error) {
-    console.error('Error fetching About content:', error);
+    if (import.meta.env.DEV) {
+      console.error('Error fetching About content:', error);
+    }
     // Return a more descriptive error
     if (error.response) {
       // The request was made and the server responded with a status code
