@@ -92,7 +92,6 @@ const corsOptions = {
     'Access-Control-Request-Method',
     'Access-Control-Request-Headers'
   ],
-  exposedHeaders: ['X-Response-Time'],
   optionsSuccessStatus: 200, // Some legacy browsers choke on 204
   preflightContinue: false,
   maxAge: 86400 // Cache preflight for 24 hours
@@ -115,9 +114,9 @@ app.use(cors(corsOptions));
 app.use((req, res, next) => {
   const start = Date.now();
   
+  // Store response time in a local variable for logging
   res.on('finish', () => {
     const duration = Date.now() - start;
-    res.setHeader('X-Response-Time', `${duration}ms`);
     
     // Log slow requests
     if (duration > 5000) { // Log requests taking more than 5 seconds
