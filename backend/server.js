@@ -29,22 +29,84 @@ const app = express();
 // CORS Configuration
 const corsOptions = {
   origin: function (origin, callback) {
-    if (!origin) return callback(null, true);
-
-    if (
-      origin.startsWith("http://localhost") ||
-      origin.includes(".vercel.app")
-    ) {
+    // Allow requests with no origin (mobile apps, curl, etc.)
+    if (!origin) {
       return callback(null, true);
     }
 
-    return callback(null, true); // allow all for now
+    // Define allowed origins
+    const allowedOrigins = [
+      // Development origins
+      'http://localhost:5173',
+      'http://localhost:5174', 
+      'http://localhost:5175',
+      'http://localhost:3000',
+      'http://127.0.0.1:5173',
+      'http://127.0.0.1:5174',
+      'http://127.0.0.1:5175',
+      'http://127.0.0.1:3000',
+      // Environment-specific origins
+      ...(process.env.CLIENT_URL ? [process.env.CLIENT_URL] : []),
+      ...(process.env.FRONTEND_URL ? [process.env.FRONTEND_URL] : []),
+      ...(process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',') : [])
+    ];
+
+    // Check if origin is explicitly allowed
+    if (allowedOrigins.includes(origin)) {
+      console.log('✅ CORS: Origin explicitly allowed:', origin);
+      return callback(null, true);
+    }
+
+    // Allow localhost origins (any port)
+    if (origin.startsWith('http://localhost:') || origin.startsWith('http://127.0.0.1:')) {
+      console.log('✅ CORS: Localhost origin allowed:', origin);
+      return callback(null, true);
+    }
+
+    // Allow any Vercel deployment
+    if (origin.endsWith('.vercel.app')) {
+      console.log('✅ CORS: Vercel origin allowed:', origin);
+      return callback(null, true);
+    }
+
+    // Allow any origin in development
+    if (process.env.NODE_ENV === 'development') {
+      console.log('✅ CORS: Development mode - origin allowed:', origin);
+      return callback(null, true);
+    }
+
+    // Log blocked origins for debugging
+    console.log('❌ CORS: Origin blocked:', origin);
+    console.log('📋 Allowed origins:', allowedOrigins);
+    
+    return callback(new Error('Not allowed by CORS'));
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
-  optionsSuccessStatus: 200 // Some legacy browsers choke on 204
+  allowedHeaders: [
+    'Content-Type', 
+    'Authorization', 
+    'X-Requested-With',
+    'Accept',
+    'Origin',
+    'Access-Control-Request-Method',
+    'Access-Control-Request-Headers'
+  ],
+  exposedHeaders: ['X-Response-Time'],
+  optionsSuccessStatus: 200, // Some legacy browsers choke on 204
+  preflightContinue: false,
+  maxAge: 86400 // Cache preflight for 24 hours
 };
+
+// Log CORS configuration on startup
+console.log('🌐 CORS Configuration:');
+console.log('   • Environment:', process.env.NODE_ENV || 'development');
+console.log('   • CLIENT_URL:', process.env.CLIENT_URL || 'not set');
+console.log('   • FRONTEND_URL:', process.env.FRONTEND_URL || 'not set');
+console.log('   • ALLOWED_ORIGINS:', process.env.ALLOWED_ORIGINS || 'not set');
+console.log('   • Credentials:', corsOptions.credentials);
+console.log('   • Methods:', corsOptions.methods.join(', '));
+console.log('   • Headers:', corsOptions.allowedHeaders.join(', '));
 
 // Middleware
 app.use(cors(corsOptions));
