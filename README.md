@@ -1,4 +1,3 @@
-**************************************************Backend Folder (README.md)************************************************************************************************************************************************
 
 # Physiotherapy Clinic Backend
 
@@ -121,75 +120,10 @@ backend/
 └── .env.example                 # Environment variables template
 ```
 
-## 🔗 API Endpoints
-
-### Authentication Routes
-- `POST /api/auth/register` - Register new user
-- `POST /api/auth/login` - User login
-- `GET /api/auth/profile` - Get user profile (Private)
-- `PUT /api/auth/profile` - Update user profile (Private)
-- `PUT /api/auth/change-password` - Change password (Private)
-
-### User Routes (Private)
-- `POST /api/user/appointment` - Create appointment
-- `GET /api/user/my-appointments` - Get user appointments
-- `GET /api/user/appointment-stats` - Get appointment statistics
-- `GET /api/user/appointment/:id` - Get appointment by ID
-- `PUT /api/user/appointment/:id` - Update appointment
-- `DELETE /api/user/appointment/:id` - Cancel appointment
-
-### Admin Routes (Admin Only)
-- `GET /api/admin/dashboard` - Get dashboard statistics
-- `GET /api/admin/users` - Get all users
-- `GET /api/admin/appointments` - Get all appointments
-- `PUT /api/admin/appointment/:id/status` - Update appointment status
-- `POST /api/admin/service` - Create service
-- `PUT /api/admin/service/:id` - Update service
-- `DELETE /api/admin/service/:id` - Delete service
-- `POST /api/admin/testimonial/approve` - Approve testimonial
-- `GET /api/admin/testimonials` - Get all testimonials
-- `DELETE /api/admin/testimonial/:id` - Delete testimonial
-- `GET /api/admin/contacts` - Get contact messages
-- `PUT /api/admin/contact/:id/read` - Mark contact as read
-
-### Public Routes
-- `GET /api/services` - Get all active services
-- `GET /api/services/search` - Search services
-- `GET /api/services/:id` - Get service by ID
-- `GET /api/testimonials` - Get approved testimonials
-- `GET /api/testimonials/featured` - Get featured testimonials
-- `GET /api/testimonials/stats` - Get testimonial statistics
-- `POST /api/testimonials` - Create testimonial
-- `POST /api/contact` - Submit contact form
 
 ### Utility Routes
 - `GET /health` - Health check
 - `GET /api` - API documentation
-
-## 🔐 Authentication
-
-The API uses JWT (JSON Web Tokens) for authentication. Include the token in the Authorization header:
-
-```
-Authorization: Bearer <your-jwt-token>
-```
-
-## 📊 Database Models
-
-### User Model
-- name, email, phone, password, role, createdAt
-
-### Appointment Model
-- userId, patientName, phone, problemDescription, preferredDate, preferredTime, status, createdAt
-
-### Service Model
-- title, description, icon, isActive, duration, price, createdAt
-
-### Testimonial Model
-- patientName, review, rating, isApproved, service, treatmentDate, createdAt
-
-### Contact Model
-- name, email, phone, message, subject, priority, status, isRead, createdAt
 
 ## 🛡️ Security Features
 
